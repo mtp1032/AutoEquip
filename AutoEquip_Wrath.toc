@@ -1,0 +1,39 @@
+## Interface: 30401
+### Title: AutoEquip
+## Version: 0.1.0
+## Notes:
+## Author: Michael Peterson
+## SavedVariablesPerCharacter: AUTO_EQUIP_SVARS
+## 26 April, 2023
+## OptionalDeps: LibSharedMedia-3.0, LibDBIcon-1.0, LibDataBroker-1.1
+
+#@no-lib-strip@
+LibACE\LibStub\LibStub.lua
+LibACE\CallbackHandler-1.0\CallbackHandler-1.0.xml
+LibACE\libdatabroker-1-1\LibDataBroker-1.1.lua
+LibACE\LibDataBroker-1.1\LibDataBroker-1.1.lua
+LibACE\LibDBIcon-1.0\LibDBIcon-1.0.lua
+LibACE\LibSharedMedia-3.0\LibSharedMedia-3.0.lua
+LibACE\AceAddon-3.0\AceAddon-3.0.xml
+LibACE\AceConsole-3.0\AceConsole-3.0.xml
+LibACE\AceDB-3.0\AceDB-3.0.xml
+#@end-no-lib-strip@
+
+##---------------------------------------------
+## Required / prerequisite files
+##---------------------------------------------
+Utils\Debug.lua
+Locales\EnUS_AutoEquip.lua
+Sources\AutoEquip.lua
+##
+Utils\Utils.lua
+Utils\Frames.lua
+Utils\MsgFrame.lua
+##
+Sources\OptionsMenu.lua
+Sources\MinimapIcon.lua
+Utils\SlashCommands.lua
+
+##--------------------------------------------
+## UNIT UnitTests
+##--------------------------------------------
