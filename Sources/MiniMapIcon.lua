@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------------
 -- AutoEquipIcon.lua
 -- AUTHOR: Michael Peterson
--- ORIGINAL DATE: 10 November, 2019
+-- ORIGINAL DATE: 16 April, 2023
 local _, AutoEquip = ...
 AutoEquip.AutoEquipIcon = {}
 icon = AutoEquip.AutoEquipIcon

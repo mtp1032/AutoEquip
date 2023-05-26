@@ -1,6 +1,6 @@
 ## Interface: 30401
 ### Title: AutoEquip
-## Version: 0.1.0
+## Version: 1.0.0
 ## Notes:
 ## Author: Michael Peterson
 ## SavedVariablesPerCharacter: AUTO_EQUIP_SVARS

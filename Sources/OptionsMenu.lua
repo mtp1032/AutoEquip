@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------------
 -- OptionsMenu
 -- AUTHOR: Michael Peterson
--- ORIGINAL DATE: 11 Nov, 2019
+-- ORIGINAL DATE: 16 April, 2023
 --------------------------------------------------------------------------------------
 local _, AutoEquip = ...
 AutoEquip.OptionsMenu = {}
