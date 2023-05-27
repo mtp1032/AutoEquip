@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------------------
 -- EnUS_AutoEquip.lua
 -- AUTHOR: mtpeterson1948 at gmail dot com
--- ORIGINAL DATE: 28 December, 2018
+-- ORIGINAL DATE: 26 April, 2023
 ----------------------------------------------------------------------------------------
 local _, AutoEquip = ...
 AutoEquip.EnUS_AutoEquip = {}
