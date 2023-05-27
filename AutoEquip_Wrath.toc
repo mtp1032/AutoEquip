@@ -1,6 +1,7 @@
 ## Interface: 30401
 ### Title: AutoEquip
 ## Version: 1.0.0
+## IconTexture: Interface/ICONS/INV_Misc_Bag_16.blp
 ## Notes:
 ## Author: Michael Peterson
 ## SavedVariablesPerCharacter: AUTO_EQUIP_SVARS

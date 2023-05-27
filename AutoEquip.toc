@@ -1,6 +1,6 @@
 ## Interface: 100100 
 ## Title: AutoEquip
-## Version: 0.1.0
+## Version: 1.0.0
 ## IconTexture: Interface/ICONS/INV_Misc_Bag_16.blp
 ## Notes:
 ## Author: Michael Peterson
