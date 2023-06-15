@@ -7,7 +7,7 @@ AutoEquip.AutoEquipIcon = {}
 icon = AutoEquip.AutoEquipIcon
 
 local L = AutoEquip.L
-local E = errors
+local dbg = equipdbg
 
 local sprintf = _G.string.format
 
@@ -18,7 +18,7 @@ local sprintf = _G.string.format
 -- local ICON_AUTO_EQUIP = 251534	-- Fishing Pole
 -- local ICON_AUTO_EQUIP = 132933	-- Fishing Pole
 local ICON_AUTO_EQUIP = 133649	-- Bag
-local addonName = locale:getAddonName()
+local addonName = enus:getAddonName()
 
 -- register the addon with ACE
 local addon = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceConsole-3.0")
@@ -32,7 +32,7 @@ local rightButtonClick	= (button == "RightButton")
 -- The addon's icon state (e.g., position, etc.,) is kept in the AutoEquipDB. Therefore
 --  this is set as the ##SavedVariable in the .toc file
 -- local AutoEquipDB = LibStub("LibDataBroker-1.1"):NewDataObject(boe.ADDON_NAME, 
-local AutoEquip_DB = LibStub("LibDataBroker-1.1"):NewDataObject(locale.ADDON_NAME, 
+local AutoEquip_DB = LibStub("LibDataBroker-1.1"):NewDataObject(enus.ADDON_NAME, 
 
 	{
 		type = "data source",
@@ -40,10 +40,7 @@ local AutoEquip_DB = LibStub("LibDataBroker-1.1"):NewDataObject(locale.ADDON_NAM
 		icon = ICON_AUTO_EQUIP,
 		OnTooltipShow = function( tooltip )
 			tooltip:AddLine(L["ADDON_AND_VERSION"])
-			tooltip:AddLine(L["Left click to toggle options menu."])
-			tooltip:AddLine(L["Right click to show encounter report(s)."])
-			tooltip:AddLine(L["Shift right click to clear encounter text."])
-			tooltip:AddLine(L["Shift left click - NOT IMPLENTED"])
+			tooltip:AddLine(L["LEFTCLICK_FOR_OPTIONS_MENU"] )
 		end, 
 		OnClick = function(self, button )
 			-- LEFT CLICK - Display the options menu
@@ -56,13 +53,13 @@ local AutoEquip_DB = LibStub("LibDataBroker-1.1"):NewDataObject(locale.ADDON_NAM
 			end
 			-- RIGHT CLICK - Show the encounter reports
 			if button == "RightButton" and not IsShiftKeyDown() then
-				mf:eraseText()
+				msgf:eraseText()
 				cleu:summarizeEncounter()
 			end
 			if button == "LeftButton" and IsShiftKeyDown() then
 			end
 			if button == "RightButton" and IsShiftKeyDown() then
-				mf:eraseText()
+				msgf:eraseText()
 			end
 	end,
 	})

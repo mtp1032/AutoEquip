@@ -8,6 +8,7 @@ slash = AutoEquip.SlashCommands
 
 local L = AutoEquip.L
 local sprintf = _G.string.format
+local dbg = equipdbg
 
 local s1 = sprintf("[HELP]\n") 
 local s2 = sprintf("Syntax: /es [enum | equip] [,command parameters]\n")
@@ -30,15 +31,15 @@ local function handler(msgStr, editbox)
     if cmd ~= "equip" and
         cmd ~= "enum" then
             isValid = false
-            mf:postMsg( errorString )
+            msgf:postMsg( errorString )
             return
     end
     if msgStr == nil and cmd ~= "enum" then
-        mf:postMsg( errorString )
+        msgf:postMsg( errorString )
         return
     end
     if msgStr == nil then
-        mf:postMsg( errorString )
+        msgf:postMsg( errorString )
         return
     end
 
@@ -53,18 +54,17 @@ local function handler(msgStr, editbox)
     
     -- elseif cmd == "boe" and options ~= "help" then    -- passed test
     --     -- display some sort of help message
-    --     mf:postMsg( errorString)
+    --     msgf:postMsg( errorString)
     --     return
     
     -- else
-    --     mf:postMsg( sprintf( "[ERROR] %s - Unknown Command!\n", cmd ))
+    --     msgf:postMsg( sprintf( "[ERROR] %s - Unknown Command!\n", cmd ))
     --     return
     -- end
 end
 SlashCmdList["AUTO_EQUIP_COMMANDS"] = handler
 
 -- ================== END PARSING ===============
-
 
 local fileName = "SlashCommands.lua"
 if dbg:debuggingIsEnabled() then

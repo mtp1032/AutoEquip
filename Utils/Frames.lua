@@ -8,6 +8,7 @@ AutoEquip.Frames = {}
 frames = AutoEquip.Frames
 local sprintf = _G.string.format
 local L = AutoEquip.L
+local dbg = equipdbg
 
 -- https://us.forums.blizzard.com/en/wow/t/addons-now-usable-in-shadowlands-beta/586355/16
 -- https://wow.gamepedia.com/API_Frame_SetBackdrop
@@ -42,7 +43,7 @@ local function createClearButton( f, placement, offX, offY )
     clearButton:SetPoint(placement, f, 5, 5)
     clearButton:SetHeight(25)
     clearButton:SetWidth(70)
-    clearButton:SetText(L["CLEAR_BUTTON_TEXT"])
+    clearButton:SetText( "Clear")
     clearButton:SetScript("OnClick", 
         function(self)
             self:GetParent().Text:EnableMouse( false )    
@@ -57,7 +58,7 @@ local function createReloadButton( f, placement, offX, offY )
 	reloadButton:SetPoint(placement, f, 5, 5) -- was -175, 10
     reloadButton:SetHeight(25)
     reloadButton:SetWidth(70)
-    reloadButton:SetText(L["RELOAD_BUTTON_TEXT"])
+    reloadButton:SetText( "UI Reload")
     reloadButton:SetScript("OnClick", 
         function(self)
             ReloadUI()
@@ -70,7 +71,7 @@ local function createSelectButton( f, placement, offX, offY )
 
     selectButton:SetHeight(25)
     selectButton:SetWidth(70)
-    selectButton:SetText(L["SELECT_BUTTON_TEXT"])
+    selectButton:SetText( "Select" )
     selectButton:SetScript("OnClick", 
         function(self)
             self:GetParent().Text:EnableMouse( true )    
@@ -85,7 +86,7 @@ local function createResetButton( f, placement, offX, offY )
     resetButton:SetPoint(placement, f, 5, 5)
     resetButton:SetHeight(25)
     resetButton:SetWidth(70)
-    resetButton:SetText(L["RESET_BUTTON_TEXT"])
+    resetButton:SetText( "Reset" )
     resetButton:SetScript("OnClick", 
         function(self)
             self:GetParent().Text:EnableMouse( false )    

@@ -8,8 +8,12 @@ AutoEquip.OptionsMenu = {}
 menu = AutoEquip.OptionsMenu
 
 local L = AutoEquip.L
+
+local dbg = equipdbg
+
 local sprintf = _G.string.format
 local EMPTY_STR = dbg.EMPTY_STR
+local SUCCESS = dbg.SUCCESS
 
 --[[ 
 GameFontNormal
@@ -88,11 +92,14 @@ end
 
 ---- INPUT DIALOG BOX
 local function createInputDialogBox(frame, title, XPOS, YPOS) -- creates the input Dialog box
-	title = sprintf("Enter name of DEFAULT Equipment Set (Requires UI Reload)") 
+	title = sprintf("Enter the name of the armor set to be equipped when\n")
+	title = title .. sprintf("entering a rest area (UI Will Be Reloaded)") 
 	local str = string.upper( title )
-	local DescrSubHeader = frame:CreateFontString(nil, "ARTWORK","GameFontNormalLarge")
-    DescrSubHeader:SetPoint("LEFT", XPOS, YPOS + 20)
+	local DescrSubHeader = frame:CreateFontString(nil, "ARTWORK","GameFontNormal")
+    DescrSubHeader:SetPoint("LEFT", XPOS, YPOS + 40)
 	DescrSubHeader:SetText( title )
+	DescrSubHeader:SetJustifyH("LEFT")
+
 	local f = CreateFrame("EditBox", "InputEditBox", frame, "InputBoxTemplate")
 	f:SetFrameStrata("DIALOG")
 	f:SetSize(200,75)
@@ -101,8 +108,11 @@ local function createInputDialogBox(frame, title, XPOS, YPOS) -- creates the inp
 	f:SetText( "" )
 	f:SetScript("OnEnterPressed", 
 		function(self,button)
+			local result = {SUCCESS, EMPTY_STR, EMPTY_STR }
 			local equipSetName = f:GetText()
-			equip:setDefault( equipSetName ) 
+			result = equip:setRestXpSet( equipSetName )
+			if not result[1] then msgf:postResult( result ) 
+			end
 			ClearCursor()
 			f:SetText("")
 			optionsPanel:Hide()
@@ -140,12 +150,13 @@ local function createOptionsPanel()
 
 	frame.titleBar = frame:CreateTexture(nil, "ARTWORK")
 	frame.titleBar:SetTexture("Interface\\DialogFrame\\UI-DialogBox-Header")
-	frame.titleBar:SetPoint("TOP", 0, 20)
-    frame.titleBar:SetSize( TITLE_BAR_WIDTH ,TITLE_BAR_HEIGHT )
+	frame.titleBar:SetPoint( "TOP", 0, 20 )
+    frame.titleBar:SetSize( TITLE_BAR_WIDTH, TITLE_BAR_HEIGHT )
 
+	-- frame.title = frame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 	frame.title = frame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 	frame.title:SetPoint("TOP", 0, 4)
-	frame.title:SetText(L["ADDON_AND_VERSION"])
+	frame.title:SetText( "AutoEquip (V 1.0.0)")
 
 	-- frame.title:SetText("AUTO_EQUIP Options")
 
@@ -164,21 +175,24 @@ local function createOptionsPanel()
 	createDefaultsButton(frame, buttonWidth, buttonHeight)
 
 	-------------------- INTRO HEADER -----------------------------------------
-	local subTitle = frame:CreateFontString(nil, "ARTWORK","GameFontNormalLarge")
-	local msgText = frame:CreateFontString(nil, "ARTWORK","GameFontNormalLarge")
+	-- local subTitle = frame:CreateFontString(nil, "ARTWORK","GameFontNormal")
+	-- local msgText = frame:CreateFontString(nil, "ARTWORK","GameFontNormalLarge")
 
-	local displayString = sprintf("%s", "Auto Equip Options")
-	msgText:SetPoint("TOP", 0, -20)
-	msgText:SetText(displayString)
+	-- local displayString = "Options"
+	-- msgText:SetPoint("TOP", 0, -30)
+	-- msgText:SetText(displayString)
 
-    -------------------- WARNING DESCRIPTION ---------------------------------------
-    local DescrSubHeader = frame:CreateFontString(nil, "ARTWORK","GameFontNormalLarge")
-	local messageText = frame:CreateFontString(nil, "ARTWORK","GameFontNormalLarge")
+    -------------------- DESCRIPTION ---------------------------------------
+    local DescrSubHeader = frame:CreateFontString(nil, "ARTWORK","GameFontNormal")
+	local messageText = frame:CreateFontString(nil, "ARTWORK","GameFontNormal")
 	messageText:SetJustifyH("LEFT")
 
-	local summary = sprintf("Summary Description of AutoEquip Addon.")
+	local summary = sprintf("AutoEquip is used to automatically and transparently equip\n")
+	summary = summary .. sprintf("a specific armor set when entering a rest area. Usually\n")
+	summary = summary .. sprintf("this means an armor set containing one or more Heirloom\n")
+	summary = summary .. sprintf("items.\n")
 	messageText:SetJustifyH("LEFT")
-	messageText:SetPoint("TOP", 0, -70)
+	messageText:SetPoint("TOP", 0, -50)
 	messageText:SetText( summary )
 
 	-- drawLine( 220, frame )

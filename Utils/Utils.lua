@@ -9,6 +9,7 @@ utils = AutoEquip.Utils
 
 local L = AutoEquip.L
 local sprintf = _G.string.format
+local dbg = equipdbg
 
 function utils:displayMsg( msg )
 	UIErrorsFrame:AddMessage( msg, 0.0, 1.0, 0.0 ) 

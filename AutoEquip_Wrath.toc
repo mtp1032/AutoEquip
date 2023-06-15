@@ -23,9 +23,11 @@ LibACE\AceDB-3.0\AceDB-3.0.xml
 ##---------------------------------------------
 ## Required / prerequisite files
 ##---------------------------------------------
+##---------------------------------------------
+## Required / prerequisite files
+##---------------------------------------------
 Utils\Debug.lua
 Locales\EnUS_AutoEquip.lua
-Sources\AutoEquip.lua
 ##
 Utils\Utils.lua
 Utils\Frames.lua
@@ -33,6 +35,7 @@ Utils\MsgFrame.lua
 ##
 Sources\OptionsMenu.lua
 Sources\MinimapIcon.lua
+Sources\AutoEquip.lua
 Utils\SlashCommands.lua
 
 ##--------------------------------------------

@@ -5,52 +5,57 @@
 --------------------------------------------------------------------------------------
 local _, AutoEquip = ... 
 AutoEquip.MsgFrame = {}
-mf = AutoEquip.MsgFrame
-local sprintf = _G.string.format
+msgf = AutoEquip.MsgFrame
+local sprintf = _G.string.format 
 local L = AutoEquip.L
+local dbg = equipdbg
+
+local FAILURE = enus.FAILURE
 
 local frameTitle = L["USER_MSG_FRAME"]
 local msgFrame = frames:createMsgFrame( frameTitle)
-local frameTitle = sprintf("%s %s", L["ADDON_AND_VERSION"], L["ERROR_MSG_FRAME_TITLE"])
+local frameTitle = sprintf("AutoEquip (V 1.0.0)" )
 local errorMsgFrame = frames:createErrorMsgFrame(frameTitle)
 
-function mf:getMsgFrame()
+function msgf:getMsgFrame()
 	return msgFrame
 end
-function mf:showFrame()
+function msgf:showFrame()
 	frames:showFrame( msgFrame )
 end
-function mf:eraseText() 
+function msgf:eraseText()  
 	frames:clearFrame( msgFrame )
 end
-function mf:hideFrame()
+function msgf:hideFrame()
 	frames:hideFrame( msgFrame )
 end
-function mf:hideMeter()
+function msgf:hideMeter()
 	frames:hideMeter( msgFrame )
 end
-function mf:showMeter()
-    if errorMsgFrame == nil then
+function msgf:showMeter()
+    if errorMsgFrame == nil then 
         return
 	end
 	if errorMsgFrame:IsVisible() == false then
 		errorMsgFrame:Show()
 	end
 end
-function mf:postMsg( msg )
+function msgf:postMsg( msg )
 	frames:showFrame( msgFrame )
 	msgFrame.Text:Insert( msg )
 end
-function mf:postResult( result )
+function msgf:postResult( result )
+
 	local status = nil
-	if result[1] ~= STATUS_C_FAILURE then 
+	if result[1] ~= FAILURE then 
 		return
 	end
-	local topLine = sprintf("[%s] %s: %s\n", "FAILURE", result[2], result[3])
-	errorMsgFrame.Text:Insert( topLine )
-	mf:showMeter()
+	
+	local resultString = sprintf("[FAILURE] %s\n", result[2] )
+	errorMsgFrame.Text:Insert( resultString )
+	errorMsgFrame:Show()
 end
-function mf:clearText()
+function msgf:clearText()
 	fm:clearFrameText()
 end
 
