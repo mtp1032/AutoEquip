@@ -1,12 +1,13 @@
 ## Interface: 30401
 ### Title: AutoEquip
 ## Version: 1.0.0
-## IconTexture: Interface/ICONS/INV_Misc_Bag_16.blp
-## Notes:
-## Author: Michael Peterson
+## Notes: Automatically equips a Rested XP Armor Set
 ## SavedVariablesPerCharacter: AUTO_EQUIP_SVARS
 ## 26 April, 2023
 ## OptionalDeps: LibSharedMedia-3.0, LibDBIcon-1.0, LibDataBroker-1.1
+## IconTexture: 894556
+## X-github: https://github.com/mtp1032/AutoEquip
+## X-Expansions: WotLK, Retail
 
 #@no-lib-strip@
 LibACE\LibStub\LibStub.lua
@@ -20,9 +21,6 @@ LibACE\AceConsole-3.0\AceConsole-3.0.xml
 LibACE\AceDB-3.0\AceDB-3.0.xml
 #@end-no-lib-strip@
 
-##---------------------------------------------
-## Required / prerequisite files
-##---------------------------------------------
 ##---------------------------------------------
 ## Required / prerequisite files
 ##---------------------------------------------
