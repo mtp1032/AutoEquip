@@ -17,7 +17,7 @@ local sprintf = _G.string.format
 
 -- local ICON_AUTO_EQUIP = 251534	-- Fishing Pole
 -- local ICON_AUTO_EQUIP = 132933	-- Fishing Pole
-local ICON_AUTO_EQUIP = 133649	-- Bag
+local ICON_AUTO_EQUIP = 894556
 local addonName = enus:getAddonName()
 
 -- register the addon with ACE
