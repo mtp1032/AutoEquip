@@ -128,7 +128,7 @@ function equip:setRestXpSet( setName ) -- Set only via the options menu
 
 	if setName == nil or setName == EMPTY_STR then
 		errMsg = L["PARAM_NIL"]
-		result = dbg:setResult( errMsg )
+		result = dbg:setResult( errMsg, debugstack(2) )
 		return result
 	end
 

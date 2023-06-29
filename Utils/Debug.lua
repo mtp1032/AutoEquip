@@ -64,11 +64,7 @@ function equipdbg:printx( ... )
 end
 function equipdbg:setResult( errMsg, stackTrace )
 	local result = {FAILURE, EMPTY_STR, EMPTY_STR }
-	if stackTrace == nil then
-		result = { FAILURE, errMsg }
-	else
 		result = { FAILURE, errMsg, stackTrace }
-	end
 	return result
 end
 function equipdbg:enableDebugging()
