@@ -16,7 +16,7 @@ local EMPTY_STR		= equipdbg.EMPTY_STR
 local SUCCESS		= equipdbg.SUCCESS
 local FAILURE		= equipdbg.FAILURE
 
-local DEBUGGING_ENABLED = true
+local DEBUGGING_ENABLED = false
 
 ---------------------------------------------------------------------------------------------------
 --                      PUBLIC/EXPORTED FUNCTIONS

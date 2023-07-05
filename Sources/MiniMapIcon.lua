@@ -73,8 +73,8 @@ function addon:OnInitialize()
 	icon:Register(addonName, AutoEquip_DB, self.db.profile.minimap) 
 end
 
+local fileName = "AutoEquipIcon.lua"
 if dbg:debuggingIsEnabled() then
-	local fileName = "AutoEquipIcon.lua"
 	DEFAULT_CHAT_FRAME:AddMessage( sprintf("%s loaded", fileName), 1.0, 1.0, 0.0 )
 end
 

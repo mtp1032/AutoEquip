@@ -111,8 +111,7 @@ local function createInputDialogBox(frame, title, XPOS, YPOS) -- creates the inp
 			local result = {SUCCESS, EMPTY_STR, EMPTY_STR }
 			local equipSetName = f:GetText()
 			result = equip:setRestXpSet( equipSetName )
-			if not result[1] then msgf:postResult( result ) 
-			end
+			if not result[1] then msgf:postResult( result ) end
 			ClearCursor()
 			f:SetText("")
 			optionsPanel:Hide()

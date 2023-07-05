@@ -46,12 +46,9 @@ function msgf:postMsg( msg )
 end
 function msgf:postResult( result )
 
-	local status = nil
-	if result[1] ~= FAILURE then 
-		return
-	end
+	if result[1] ~= FAILURE then return end
 	
-	local resultString = sprintf("[FAILURE] %s\n", result[2] )
+	local resultString = sprintf("[FAILURE] %s\n%s", result[2], result[3] )
 	errorMsgFrame.Text:Insert( resultString )
 	errorMsgFrame:Show()
 end

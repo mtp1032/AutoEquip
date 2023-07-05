@@ -2,7 +2,7 @@
 ## Title: AutoEquip
 ## Version: 1.0.0
 ## Notes: Automatically equips a Rested XP Armor Set
-## SavedVariablesPerCharacter: AUTO_EQUIP_SVARS
+## SavedVariablesPerCharacter: AUTO_EQUIP_XPSET_ID, AUTO_EQUIP_NONXP_SET_ID, AutoEquip_DB
 ## 26 April, 2023
 ## OptionalDeps: LibSharedMedia-3.0, LibDBIcon-1.0, LibDataBroker-1.1
 ## IconTexture: 894556
