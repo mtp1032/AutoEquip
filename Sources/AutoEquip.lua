@@ -143,7 +143,6 @@ function equip:setRestXpSet( setName ) -- Set only via the options menu
 	end
 	local equippedSetName, equippedSetId = getEquippedSet()
 
-	assert( AUTO_EQUIP_XPSET_ID == nil, "ASSERT FAILE: shouldn't be here")
 	AUTO_EQUIP_NONXP_SET_ID = equippedSetId
 	AUTO_EQUIP_XPSET_ID 	= restSetId 
 
