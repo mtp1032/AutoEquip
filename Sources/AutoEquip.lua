@@ -8,7 +8,6 @@ equip = AutoEquip.AutoEquip
 
 local L = AutoEquip.L
 
--- https://wowpedia.fandom.com/wiki/Saving_variables_between_game_sessions
 -- https://wowwiki-archive.fandom.com/wiki/API_IsResting
 
 local sprintf = _G.string.format
@@ -164,8 +163,8 @@ function( self, event, ... )
 	local currentId = nil
 
 	if event == "PLAYER_UPDATE_RESTING" then
-		if AUTO_EQUIP_XPSET_ID 		== nil then print("Rest Set Has Not Been Set") return end
-		if AUTO_EQUIP_NONXP_SET_ID 	== nil then print("DPS Set Nas Not Been Set") return end
+		if AUTO_EQUIP_XPSET_ID 		== nil then return end
+		if AUTO_EQUIP_NONXP_SET_ID 	== nil then return end
 
 		local msg = nil
 
