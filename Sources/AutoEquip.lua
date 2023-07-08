@@ -13,8 +13,8 @@ local L = AutoEquip.L
 local sprintf = _G.string.format
 
 local autoEquipSavedVars	= {}
-AUTO_EQUIP_XPSET_ID			= nil
-AUTO_EQUIP_NONXP_SET_ID 	= nil
+AUTO_EQUIP_XPSET_SAVED_ID			= nil
+AUTO_EQUIP_NONXP_SAVED_ID 	= nil
 
 local INDEX_RESTXP_SET	= 1
 local INDEX_SAVED_SET 	= 2
@@ -142,11 +142,11 @@ function equip:setRestXpSet( setName ) -- Set only via the options menu
 	end
 	local equippedSetName, equippedSetId = getEquippedSet()
 
-	AUTO_EQUIP_NONXP_SET_ID = equippedSetId
-	AUTO_EQUIP_XPSET_ID 	= restSetId 
+	AUTO_EQUIP_NONXP_SAVED_ID = equippedSetId
+	AUTO_EQUIP_XPSET_SAVED_ID 	= restSetId 
 
-	autoEquipSavedVars[INDEX_SAVED_SET] = AUTO_EQUIP_NONXP_SET_ID
-	autoEquipSavedVars[INDEX_RESTXP_SET] = AUTO_EQUIP_XPSET_ID
+	autoEquipSavedVars[INDEX_SAVED_SET] = AUTO_EQUIP_NONXP_SAVED_ID
+	autoEquipSavedVars[INDEX_RESTXP_SET] = AUTO_EQUIP_XPSET_SAVED_ID
 
 	C_UI.Reload()
 	return result
@@ -163,47 +163,45 @@ function( self, event, ... )
 	local currentId = nil
 
 	if event == "PLAYER_UPDATE_RESTING" then
-		if AUTO_EQUIP_XPSET_ID 		== nil then return end
-		if AUTO_EQUIP_NONXP_SET_ID 	== nil then return end
+		-- Return if saved vars have not been set.
+		if AUTO_EQUIP_XPSET_SAVED_ID == nil then return end
+		if AUTO_EQUIP_NONXP_SAVED_ID == nil then return end
 
 		local msg = nil
+		local equipSetName, equipSetId = getEquippedSet()
+		local restedSetName = getSetNameByID( AUTO_EQUIP_XPSET_SAVED_ID )
 
-		if IsResting() then -- ENTERING a resting zone. Equip the INDEX_RESTXP_SET set
+ 		if IsResting() then -- player is in a resting zone. Equip the INDEX_RESTXP_SET set
 
-			-- save the set the player was wearing when entering the resting zone
-			_, autoEquipSavedVars[INDEX_SAVED_SET] = getEquippedSet()
-			local savedSet = getSetNameByID( autoEquipSavedVars[INDEX_SAVED_SET])
-
-			-- Now, switch to the resting XP set, the heirloom set
-			equipSetByID( autoEquipSavedVars[INDEX_RESTXP_SET] )
-			
-			local setName = getSetNameByID( autoEquipSavedVars[INDEX_RESTXP_SET])
-			msg = sprintf("ENTERED Rest area: %s has been equipped. %s saved.", setName, savedSet )
-			UIErrorsFrame:AddMessage( msg, 0.0, 1.0, 0.0 )
-
+			if equipSetId ~= AUTO_EQUIP_XPSET_SAVED_ID then
+				-- Now, switch to the resting XP set
+				equipSetByID( AUTO_EQUIP_XPSET_SAVED_ID )
+				
+				msg = sprintf("ENTERED Rest area: switched to %s, from %s.", restedSetName, equipSetName )
+			else
+				msg = sprintf("In Rest area: %s already equipped.", restedSetName )
+			end
 		else	-- LEAVING rested zone. EQUIP the SAVED_SET set
 
-			equipSetByID( autoEquipSavedVars[INDEX_SAVED_SET])
-			local restedSet = getSetNameByID( autoEquipSavedVars[INDEX_RESTXP_SET])
-			
-			local setName = getSetNameByID( autoEquipSavedVars[INDEX_SAVED_SET])
-			msg = sprintf("LEFT Rest area: %s has been equipped. %s has been saved.", setName, restedSet )
-			UIErrorsFrame:AddMessage( msg, 0.0, 1.0, 0.0 )
-		end
-		return
-	end
+			equipSetByID( AUTO_EQUIP_NONXP_SAVED_ID)
+			equipSetName = getSetNameByID( AUTO_EQUIP_NONXP_SAVED_ID)
 
+			
+			msg = sprintf("LEFT Rest area: switched to %s from %s.", equipSetName, restedSetName )
+		end
+		UIErrorsFrame:AddMessage( msg, 0.0, 1.0, 0.0 )
+		DEFAULT_CHAT_FRAME:AddMessage( msg, 0.0, 1.0, 0.0 )
+	end
 	if event == "ADDON_LOADED" and arg[1] == L["ADDON_NAME"] then
 
+		if AUTO_EQUIP_XPSET_SAVED_ID == nil then
+			autoEquipSavedVars[INDEX_RESTXP_SET] = nil
+			autoEquipSavedVars[INDEX_SAVED_SET]  = nil
+		else
+			autoEquipSavedVars[INDEX_RESTXP_SET] = AUTO_EQUIP_XPSET_SAVED_ID
+			autoEquipSavedVars[INDEX_SAVED_SET]  = AUTO_EQUIP_NONXP_SAVED_ID
+		end
 		DEFAULT_CHAT_FRAME:AddMessage( L["ADDON_LOADED_MSG"],  1.0, 1.0, 0.0 )
-
-		if AUTO_EQUIP_XPSET_ID ~= nil then
-			autoEquipSavedVars[INDEX_RESTXP_SET] = AUTO_EQUIP_XPSET_ID
-		end
-		if AUTO_EQUIP_NONXP_SET_ID ~= nil then
-			autoEquipSavedVars[INDEX_SAVED_SET] = AUTO_EQUIP_NONXP_SET_ID
-		end
-
 		eventFrame:UnregisterEvent( "ADDON_LOADED")
 		return
 	end
