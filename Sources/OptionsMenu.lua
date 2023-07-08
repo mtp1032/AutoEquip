@@ -63,6 +63,8 @@ local function drawLine( yPos, f)
 	line:SetEndPoint("RIGHT", X_START_POINT, Y_START_POINT)
 	lineFrame:Show() 
 end
+
+
 local function createDefaultsButton(f, width, height) -- creates Default button
 
 	f.hide = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
@@ -89,11 +91,51 @@ local function createAcceptButton(f, width, height) -- creates Accept button
 			optionsPanel:Hide()
 		end)
 end
+---- INPUT ARMOR SET ICONS
+local function createArmorSetIcon( f, setName, iconFileId, i )
+	local BUTTON_WIDTH  = 48
+	local BUTTON_HEIGHT = 48
 
+	local btn = CreateFrame("Button",nil, f,"TooltipBackdropTemplate")
+	btn:SetBackdropBorderColor(0.5,0.5,0.5)
+	btn:SetSize( BUTTON_WIDTH, BUTTON_HEIGHT )
+	btn:SetPoint( "LEFT", (BUTTON_WIDTH * i) + 2, 0 )
+
+	btn.Name = btn:CreateFontString(nil,"ARTWORK", "GameFontNormalSmall")
+	btn.Name:SetPoint("BOTTOM", 0, 4 )
+	btn.Name:SetText( setName )
+
+	btn.Texture = btn:CreateTexture(nil,"ARTWORK")
+	btn.Texture:SetPoint("TOPLEFT",3,-3)
+	btn.Texture:SetPoint("BOTTOMRIGHT",-3,3)
+	btn.Texture:SetTexCoord(0.075,0.925,0.075,0.925) -- trim off icon's edges
+	btn.Texture:SetTexture(iconFileId)
+
+	btn.Mask = btn:CreateMaskTexture(nil,"ARTWORK")
+	btn.Mask:SetPoint("TOPLEFT",btn.Texture,"TOPLEFT")
+	btn.Mask:SetPoint("BOTTOMRIGHT",btn.Texture,"BOTTOMRIGHT")
+	btn.Mask:SetTexture("Interface\\Common\\common-iconmask.blp")
+	btn.Texture:AddMaskTexture(btn.Mask)
+
+	btn:RegisterForClicks("AnyDown")
+	btn:SetScript("OnClick", 
+	function ( self )
+		local result = {SUCCESS, EMPTY_STR, EMPTY_STR }
+
+		local equipSetName = btn.Name:GetText()
+		result = equip:setRestXpSet( equipSetName )
+		if not result[1] then msgf:postResult( result ) end
+		ClearCursor()
+		f:SetText("")
+		optionsPanel:Hide()
+	end)
+	return btn
+end
 ---- INPUT DIALOG BOX
 local function createInputDialogBox(frame, title, XPOS, YPOS) -- creates the input Dialog box
-	title = sprintf("Enter the name of the armor set to be equipped when\n")
-	title = title .. sprintf("entering a rest area (UI Will Be Reloaded)") 
+	title = sprintf("Click on the appropriate icon above, or enter the name of the armor set\n")
+	title = title .. sprintf(" to be equipped when entering a rest area (UI Will Be Reloaded)\n") 
+	title = title .. sprintf(" (NOTE: Set names are case sensitive.)\n")
 	local str = string.upper( title )
 	local DescrSubHeader = frame:CreateFontString(nil, "ARTWORK","GameFontNormal")
     DescrSubHeader:SetPoint("LEFT", XPOS, YPOS + 40)
@@ -173,14 +215,13 @@ local function createOptionsPanel()
 	createAcceptButton(frame, buttonWidth, buttonHeight)
 	createDefaultsButton(frame, buttonWidth, buttonHeight)
 
-	-------------------- INTRO HEADER -----------------------------------------
-	-- local subTitle = frame:CreateFontString(nil, "ARTWORK","GameFontNormal")
-	-- local msgText = frame:CreateFontString(nil, "ARTWORK","GameFontNormalLarge")
-
-	-- local displayString = "Options"
-	-- msgText:SetPoint("TOP", 0, -30)
-	-- msgText:SetText(displayString)
-
+	frame.btn = {}
+	local Ids = C_EquipmentSet.GetEquipmentSetIDs()
+	for i = 1, #Ids do
+		local setName, iconFileId = C_EquipmentSet.GetEquipmentSetInfo( Ids[i] )
+		frame.btn[i] = createArmorSetIcon ( frame, setName, iconFileId, i )
+	end
+	
     -------------------- DESCRIPTION ---------------------------------------
     local DescrSubHeader = frame:CreateFontString(nil, "ARTWORK","GameFontNormal")
 	local messageText = frame:CreateFontString(nil, "ARTWORK","GameFontNormal")
