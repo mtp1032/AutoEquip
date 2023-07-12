@@ -45,6 +45,23 @@ CombatLogFont
 ------------------------------------------------------------
 --						SAVED GLOBALS
 ------------------------------------------------------------
+local function getEquippedSet()
+	local setId = nil
+	local setName = nil
+	local isEquipped = nil
+
+	local setIDs = C_EquipmentSet.GetEquipmentSetIDs()
+	for i = 1, #setIDs do
+		local name, _, Id, equipped = C_EquipmentSet.GetEquipmentSetInfo( setIDs[i] )
+		if equipped then 
+			setName = name
+			setId = Id
+			isEquipped = equipped
+		end
+	end
+	return setName, setId, isEquipped
+end
+
 local optionsPanel = nil
 
 local LINE_SEGMENT_LENGTH 	= 575
@@ -65,32 +82,6 @@ local function drawLine( yPos, f)
 end
 
 
-local function createDefaultsButton(f, width, height) -- creates Default button
-
-	f.hide = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
-	f.hide:SetText("Defaults")
-	f.hide:SetHeight(height)	-- original value 20
-	f.hide:SetWidth(width)		-- original value 80
-	f.hide:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 8, 8)
-	f.hide:SetScript("OnClick",
-		function( self )
-			DEFAULT_CHAT_FRAME:AddMessage( sprintf("<Not Yet Implemented>", set ), 1.0, 1.0, 0.0 )
-			optionsPanel:Hide()
-		end)
-end
-local function createAcceptButton(f, width, height) -- creates Accept button
-    -- -- Accept buttom, bottom right
-	f.hide = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
-	f.hide:SetText("Accept")
-	f.hide:SetHeight(height)	-- Original value = 20
-	f.hide:SetWidth(width)		-- Original value = 80
-	f.hide:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -8, 8)
-	f.hide:SetScript("OnClick",
-		function( self )
-			DEFAULT_CHAT_FRAME:AddMessage( sprintf("<Not Yet Implemented>", set ), 1.0, 1.0, 0.0 )
-			optionsPanel:Hide()
-		end)
-end
 ---- INPUT ARMOR SET ICONS
 local function createArmorSetIcon( f, setName, iconFileId, i )
 	local BUTTON_WIDTH  = 48
@@ -99,7 +90,7 @@ local function createArmorSetIcon( f, setName, iconFileId, i )
 	local btn = CreateFrame("Button",nil, f,"TooltipBackdropTemplate")
 	btn:SetSize( BUTTON_WIDTH, BUTTON_HEIGHT )
 	-- btn:SetPoint( "LEFT", (BUTTON_WIDTH * i) + 20, 0 )
-	btn:SetPoint( "LEFT", (BUTTON_WIDTH + 10) * (i - 1) + 20, 0 )
+	btn:SetPoint( "LEFT", (BUTTON_WIDTH + 10) * (i + 2) + 20, -50 )
 
 	-- button:SetPoint("TOPLEFT",5,-((i-1)*BUTTON_HEIGHT)-24)	-- from Visual Thread
 
@@ -137,35 +128,33 @@ local function createArmorSetIcon( f, setName, iconFileId, i )
 end
 ---- INPUT DIALOG BOX
 local function createInputDialogBox(frame, title, XPOS, YPOS) -- creates the input Dialog box
-	title = sprintf("Click on the appropriate icon above, or enter the name of the armor set\n")
-	title = title .. sprintf(" to be equipped when entering a rest area (UI Will Be Reloaded)\n") 
-	title = title .. sprintf(" (NOTE: Set names are case sensitive.)\n")
-	local str = string.upper( title )
+	local equippedSet = getEquippedSet()
+	title = sprintf("Currently Equipped: %s\n", equippedSet )
 	local DescrSubHeader = frame:CreateFontString(nil, "ARTWORK","GameFontNormal")
-    DescrSubHeader:SetPoint("LEFT", XPOS, YPOS + 40)
+    DescrSubHeader:SetPoint("LEFT", XPOS, YPOS)
 	DescrSubHeader:SetText( title )
 	DescrSubHeader:SetJustifyH("LEFT")
 
-	local f = CreateFrame("EditBox", "InputEditBox", frame, "InputBoxTemplate")
-	f:SetFrameStrata("DIALOG")
-	f:SetSize(200,75)
-	f:SetAutoFocus(false)
-	f:SetPoint("LEFT", XPOS, YPOS)
-	f:SetText( "" )
-	f:SetScript("OnEnterPressed", 
-		function(self,button)
-			local result = {SUCCESS, EMPTY_STR, EMPTY_STR }
-			local equipSetName = f:GetText()
-			result = equip:setRestXpSet( equipSetName )
-			if not result[1] then msgf:postResult( result ) end
-			ClearCursor()
-			f:SetText("")
-			optionsPanel:Hide()
-	end)
+	-- local f = CreateFrame("EditBox", "InputEditBox", frame, "InputBoxTemplate")
+	-- f:SetFrameStrata("DIALOG")
+	-- f:SetSize(200,75)
+	-- f:SetAutoFocus(false)
+	-- f:SetPoint("LEFT", XPOS, YPOS)
+	-- f:SetText( "" )
+	-- f:SetScript("OnEnterPressed", 
+	-- 	function(self,button)
+	-- 		local result = {SUCCESS, EMPTY_STR, EMPTY_STR }
+	-- 		local equipSetName = f:GetText()
+	-- 		result = equip:setRestXpSet( equipSetName )
+	-- 		if not result[1] then msgf:postResult( result ) end
+	-- 		ClearCursor()
+	-- 		f:SetText("")
+	-- 		optionsPanel:Hide()
+	-- end)
 end
 -- Option Menu Settings
 local FRAME_WIDTH 		= 600
-local FRAME_HEIGHT 		= 400
+local FRAME_HEIGHT 		= 300
 local TITLE_BAR_WIDTH 	= 600
 -- local TITLE_BAR_HEIGHT 	= 45
 local TITLE_BAR_HEIGHT 	= 75
@@ -216,9 +205,6 @@ local function createOptionsPanel()
 	local buttonWidth = 80
 	local buttonHeight	= 20
 
-	createAcceptButton(frame, buttonWidth, buttonHeight)
-	createDefaultsButton(frame, buttonWidth, buttonHeight)
-
 	frame.btn = {}
 	local setIDs = C_EquipmentSet.GetEquipmentSetIDs()
 	for i = 1, #setIDs do
@@ -240,7 +226,7 @@ local function createOptionsPanel()
 	messageText:SetText( summary )
 
 	-- drawLine( 220, frame )
-	drawLine( 50, frame )
+	drawLine( 0, frame )
 	-- coords for line
 	local xPos = 20
 	local yPos = -250
