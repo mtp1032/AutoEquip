@@ -34,7 +34,6 @@ Utils\MsgFrame.lua
 Sources\OptionsMenu.lua
 Sources\MinimapIcon.lua
 Sources\AutoEquip.lua
-Utils\SlashCommands.lua
 
 ##--------------------------------------------
 ## UNIT UnitTests
