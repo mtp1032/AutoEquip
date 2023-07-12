@@ -33,7 +33,6 @@ local rightButtonClick	= (button == "RightButton")
 --  this is set as the ##SavedVariable in the .toc file
 -- local AutoEquipDB = LibStub("LibDataBroker-1.1"):NewDataObject(boe.ADDON_NAME, 
 local AutoEquip_DB = LibStub("LibDataBroker-1.1"):NewDataObject(enus.ADDON_NAME, 
-
 	{
 		type = "data source",
 		text = addonName,
@@ -45,11 +44,7 @@ local AutoEquip_DB = LibStub("LibDataBroker-1.1"):NewDataObject(enus.ADDON_NAME,
 		OnClick = function(self, button )
 			-- LEFT CLICK - Display the options menu
 			if button == "LeftButton" and not IsShiftKeyDown() then 
-				if menu:isVisible() then
-					menu:hide()
-				else
-					menu:show()
-				end
+				menu:show()
 			end
 			-- RIGHT CLICK - Show the encounter reports
 			if button == "RightButton" and not IsShiftKeyDown() then
