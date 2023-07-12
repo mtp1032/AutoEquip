@@ -1,4 +1,4 @@
-## Interface: 100100 
+## Interface: 100105 
 ## Title: AutoEquip
 ## Version: 1.0.0
 ## Notes: Automatically equips a Rested XP Armor Set
