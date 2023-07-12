@@ -97,9 +97,11 @@ local function createArmorSetIcon( f, setName, iconFileId, i )
 	local BUTTON_HEIGHT = 48
 
 	local btn = CreateFrame("Button",nil, f,"TooltipBackdropTemplate")
-	btn:SetBackdropBorderColor(0.5,0.5,0.5)
 	btn:SetSize( BUTTON_WIDTH, BUTTON_HEIGHT )
-	btn:SetPoint( "LEFT", (BUTTON_WIDTH * i) + 2, 0 )
+	-- btn:SetPoint( "LEFT", (BUTTON_WIDTH * i) + 20, 0 )
+	btn:SetPoint( "LEFT", (BUTTON_WIDTH + 10) * (i - 1) + 20, 0 )
+
+	-- button:SetPoint("TOPLEFT",5,-((i-1)*BUTTON_HEIGHT)-24)	-- from Visual Thread
 
 	btn.Name = btn:CreateFontString(nil,"ARTWORK", "GameFontNormalSmall")
 	btn.Name:SetPoint("BOTTOM", 0, 4 )
@@ -109,7 +111,9 @@ local function createArmorSetIcon( f, setName, iconFileId, i )
 	btn.Texture:SetPoint("TOPLEFT",3,-3)
 	btn.Texture:SetPoint("BOTTOMRIGHT",-3,3)
 	btn.Texture:SetTexCoord(0.075,0.925,0.075,0.925) -- trim off icon's edges
-	btn.Texture:SetTexture(iconFileId)
+	btn:SetNormalTexture(iconFileId)
+	btn:SetHighlightTexture(iconFileId )
+	btn:GetHighlightTexture():SetAlpha(0.5)
 
 	btn.Mask = btn:CreateMaskTexture(nil,"ARTWORK")
 	btn.Mask:SetPoint("TOPLEFT",btn.Texture,"TOPLEFT")
@@ -216,9 +220,9 @@ local function createOptionsPanel()
 	createDefaultsButton(frame, buttonWidth, buttonHeight)
 
 	frame.btn = {}
-	local Ids = C_EquipmentSet.GetEquipmentSetIDs()
-	for i = 1, #Ids do
-		local setName, iconFileId = C_EquipmentSet.GetEquipmentSetInfo( Ids[i] )
+	local setIDs = C_EquipmentSet.GetEquipmentSetIDs()
+	for i = 1, #setIDs do
+		local setName, iconFileId = C_EquipmentSet.GetEquipmentSetInfo( setIDs[i] )
 		frame.btn[i] = createArmorSetIcon ( frame, setName, iconFileId, i )
 	end
 	
@@ -254,14 +258,11 @@ local function createOptionsPanel()
 	frame:Show() 
 	return frame   
 end
-optionsPanel = createOptionsPanel()
-function menu:isVisible()
-	return optionsPanel:IsVisible()
-end
 function menu:show()
-	if not optionsPanel:IsVisible() then
-		optionsPanel:Show()
+	if optionsPanel == nil then
+		optionsPanel = createOptionsPanel()
 	end
+	optionsPanel:Show()
 end
 function menu:hide()
 	if optionsPanel:IsVisible() then
