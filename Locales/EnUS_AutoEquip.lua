@@ -75,19 +75,14 @@ if LOCALE == "enUS" then
 	L["USER_MSG_FRAME"]					= sprintf("%s %s", L["ADDON_AND_VERSION"], "User Messages")
 	L["LEFT_CLICK_FOR_OPTIONS_MENU"] 	= "Left Click to display In-Game Options Menu."
 	L["HELP_FRAME_TITLE"]				= sprintf("Help: %s", L["ADDON_AND_VERSION"])
-	L["ADDON_LOADED_MSG"]				= sprintf("%s loaded (Use /boe for help).", L["ADDON_AND_VERSION"])
+	L["ADDON_LOADED_MSG"]				= sprintf("%s.", L["ADDON_AND_VERSION"])
 
 	-- bod Specific
 	L["LEFTCLICK_FOR_OPTIONS_MENU"]			= sprintf( "Left click to display the %s Options Menu.", L["ADDON_NAME"] )
 
-	L["SELECT"]					= "Select"
-	L["RESET"]					= "Reset"
-	L["RELOAD"]					= "UI Reload"
-	L["CLEAR"]					= "Clear"
-
 	L["DSCR_SUBHEADER"] = "Auto Save & Restore Your Equipment Sets"
 
-	L["LINE1"]			= sprintf("%s is intended to automatically equip an armore set", L["ADDON_NAME"])
+	L["LINE1"]			= sprintf("%s is intended to automatically equip an armor set", L["ADDON_NAME"])
 	L["LINE2"] 			= "containing one or more Heirloom items whenever the character enters"
 	L["LINE3"] 			= "a rest area (e.g, an Inn or a city). The set the character was wearing"
 	L["LINE4"]			= "when entering the rest area will be restored when the character leaves."
