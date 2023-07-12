@@ -46,16 +46,16 @@ local AutoEquip_DB = LibStub("LibDataBroker-1.1"):NewDataObject(enus.ADDON_NAME,
 			if button == "LeftButton" and not IsShiftKeyDown() then 
 				menu:show()
 			end
-			-- RIGHT CLICK - Show the encounter reports
-			if button == "RightButton" and not IsShiftKeyDown() then
-				msgf:eraseText()
-				cleu:summarizeEncounter()
-			end
-			if button == "LeftButton" and IsShiftKeyDown() then
-			end
-			if button == "RightButton" and IsShiftKeyDown() then
-				msgf:eraseText()
-			end
+			-- -- RIGHT CLICK - Show the encounter reports
+			-- if button == "RightButton" and not IsShiftKeyDown() then
+			-- 	msgf:eraseText()
+			-- 	cleu:summarizeEncounter()
+			-- end
+			-- if button == "LeftButton" and IsShiftKeyDown() then
+			-- end
+			-- if button == "RightButton" and IsShiftKeyDown() then
+			-- 	msgf:eraseText()
+			--end
 	end,
 	})
 
