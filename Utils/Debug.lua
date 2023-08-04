@@ -33,7 +33,7 @@ function equipdbg:simpleStackTrace( stackTrace )
 end
 function equipdbg:prefix( stackTrace )
 	if stackTrace == nil then stackTrace = debugstack(2) end
-	print( stackTrace )
+	-- print( stackTrace )
 
 	local pieces = {strsplit( ":", stackTrace, 5 )}
 	local segments = {strsplit( "\\", pieces[1], 5 )}
