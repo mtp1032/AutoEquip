@@ -45,23 +45,6 @@ CombatLogFont
 ------------------------------------------------------------
 --						SAVED GLOBALS
 ------------------------------------------------------------
-local function getEquippedSet()
-	local setId = nil
-	local setName = nil
-	local isEquipped = nil
-
-	local setIDs = C_EquipmentSet.GetEquipmentSetIDs()
-	for i = 1, #setIDs do
-		local name, _, Id, equipped = C_EquipmentSet.GetEquipmentSetInfo( setIDs[i] )
-		if equipped then 
-			setName = name
-			setId = Id
-			isEquipped = equipped
-		end
-	end
-	return setName, setId, isEquipped
-end
-
 local optionsPanel = nil
 
 local LINE_SEGMENT_LENGTH 	= 575
@@ -81,7 +64,6 @@ local function drawLine( yPos, f)
 	lineFrame:Show() 
 end
 
-
 ---- INPUT ARMOR SET ICONS
 local function createArmorSetIcon( f, setName, iconFileId, i )
 	local BUTTON_WIDTH  = 48
@@ -89,7 +71,6 @@ local function createArmorSetIcon( f, setName, iconFileId, i )
 
 	local btn = CreateFrame("Button",nil, f,"TooltipBackdropTemplate")
 	btn:SetSize( BUTTON_WIDTH, BUTTON_HEIGHT )
-	-- btn:SetPoint( "LEFT", (BUTTON_WIDTH * i) + 20, 0 )
 	btn:SetPoint( "LEFT", (BUTTON_WIDTH + 10) * (i + 2) + 20, -50 )
 
 	-- button:SetPoint("TOPLEFT",5,-((i-1)*BUTTON_HEIGHT)-24)	-- from Visual Thread
@@ -104,7 +85,7 @@ local function createArmorSetIcon( f, setName, iconFileId, i )
 	btn.Texture:SetTexCoord(0.075,0.925,0.075,0.925) -- trim off icon's edges
 	btn:SetNormalTexture(iconFileId)
 	btn:SetHighlightTexture(iconFileId )
-	btn:GetHighlightTexture():SetAlpha(0.5)
+	btn:GetHighlightTexture():SetAlpha(0.8)
 
 	btn.Mask = btn:CreateMaskTexture(nil,"ARTWORK")
 	btn.Mask:SetPoint("TOPLEFT",btn.Texture,"TOPLEFT")
@@ -118,39 +99,21 @@ local function createArmorSetIcon( f, setName, iconFileId, i )
 		local result = {SUCCESS, EMPTY_STR, EMPTY_STR }
 
 		local equipSetName = btn.Name:GetText()
-		result = equip:setRestXpSet( equipSetName )
-		if not result[1] then msgf:postResult( result ) end
-		ClearCursor()
-		f:SetText("")
+		equip:setRestXpSet( equipSetName )
+		-- ClearCursor()
+		-- f:SetText("")
 		optionsPanel:Hide()
 	end)
 	return btn
 end
 ---- INPUT DIALOG BOX
 local function createInputDialogBox(frame, title, XPOS, YPOS) -- creates the input Dialog box
-	local equippedSet = getEquippedSet()
-	title = sprintf("Currently Equipped: %s\n", equippedSet )
+	local equippedSetName = equip:getEquippedSet()
+	local title = sprintf("Currently Equipped: %s.\n", equippedSetName )
 	local DescrSubHeader = frame:CreateFontString(nil, "ARTWORK","GameFontNormal")
     DescrSubHeader:SetPoint("LEFT", XPOS, YPOS)
-	DescrSubHeader:SetText( title )
 	DescrSubHeader:SetJustifyH("LEFT")
-
-	-- local f = CreateFrame("EditBox", "InputEditBox", frame, "InputBoxTemplate")
-	-- f:SetFrameStrata("DIALOG")
-	-- f:SetSize(200,75)
-	-- f:SetAutoFocus(false)
-	-- f:SetPoint("LEFT", XPOS, YPOS)
-	-- f:SetText( "" )
-	-- f:SetScript("OnEnterPressed", 
-	-- 	function(self,button)
-	-- 		local result = {SUCCESS, EMPTY_STR, EMPTY_STR }
-	-- 		local equipSetName = f:GetText()
-	-- 		result = equip:setRestXpSet( equipSetName )
-	-- 		if not result[1] then msgf:postResult( result ) end
-	-- 		ClearCursor()
-	-- 		f:SetText("")
-	-- 		optionsPanel:Hide()
-	-- end)
+	DescrSubHeader:SetText( title )
 end
 -- Option Menu Settings
 local FRAME_WIDTH 		= 600

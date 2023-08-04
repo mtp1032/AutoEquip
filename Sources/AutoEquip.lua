@@ -12,14 +12,9 @@ local L = AutoEquip.L
 
 local sprintf = _G.string.format
 
-local autoEquipSavedVars	= {}
-AUTO_EQUIP_XPSET_SAVED_ID			= nil
-AUTO_EQUIP_NONXP_SAVED_ID 	= nil
+autoEquipSavedVars	= nil
 
-local INDEX_RESTXP_SET	= 1
-local INDEX_SAVED_SET 	= 2
-local dbg = equipdbg
-
+local dbg 			= equipdbg
 local EMPTY_STR		= dbg.EMPTY_STR
 local SUCCESS		= dbg.SUCCESS
 local FAILURE		= dbg.FAILURE
@@ -40,9 +35,9 @@ local function getSetNameByID( setId )
 
 	local setIDs = C_EquipmentSet.GetEquipmentSetIDs()
 	for i = 1, #setIDs do
-		local name, _, id, isEquipped = C_EquipmentSet.GetEquipmentSetInfo( setIDs[i] )
+		local setName, _, id, isEquipped = C_EquipmentSet.GetEquipmentSetInfo( setIDs[i] )
 		if setId == id then 
-			setName = name
+			return setName
 		end
 	end
 	return setName
@@ -72,20 +67,15 @@ local function setIsEquipped( setId )
 	return equipped
 end
 local function getEquippedSet()
-	local setId = nil
-	local setName = nil
-	local isEquipped = nil
 
 	local setIDs = C_EquipmentSet.GetEquipmentSetIDs()
 	for i = 1, #setIDs do
-		local name, _, Id, equipped = C_EquipmentSet.GetEquipmentSetInfo( setIDs[i] )
-		if equipped then 
-			setName = name
-			setId = Id
-			isEquipped = equipped
+		local setName, _, setId, isEquipped = C_EquipmentSet.GetEquipmentSetInfo( setIDs[i] )
+		if isEquipped then 
+			return setName, setId, isEquipped
 		end
 	end
-	return setName, setId, isEquipped
+	return nil, nil, nil
 end
 local function equipSetByID( setId )
 	local result = { SUCCESS, EMPTY_STR , EMPTY_STR }
@@ -115,92 +105,69 @@ local function equipSetByName( setName )
 		if not result[1] then msgf:postResult( result ) return end
 	end
 end 
-function equip:setRestXpSet( setName ) -- Set only via the options menu
-	local result = {SUCCESS, EMPTY_STR, EMPTY_STR}
+function equip:setRestXpSet( inputRestingSetName ) -- Set only via the options menu
 
-	local errMsg = nil
-	-- post error if set name poorly formed.
-	if setName == nil or setName == EMPTY_STR then
-		errMsg = L["PARAM_NIL"]
-		result = equipdbg:setResult( errMsg, equipdbg:simpleStackTrace() )
-		if not result[1] then return result end
-	end
+	local restingSetId 	= getSetIdByName( inputRestingSetName )
+	local _, equippedSetId = getEquippedSet()
+	autoEquipSavedVars 	= { restingSetId, equippedSetId }
 
-	local restSetId = getSetIdByName( setName )
-	-- post error if the input set does not exist
-	if restSetId == nil then
-		errMsg = sprintf(L["ARMOR_SET_NOT_FOUND"], setName )
-		local setNames = enumSetNames()
-		local namesStr = sprintf("%s", setNames[1])
-		for i = 2, #setNames do
-			namesStr = namesStr .. sprintf(", %s", setNames[i])
-		end
-		local setNames = L["AVAILABLE_SETS"] .. namesStr
-		local errMsg = sprintf("%s %s", errMsg, setNames ) 
-		result = equipdbg:setResult( errMsg, equipdbg:simpleStackTrace() )
-		if not result[1] then return result end
-	end
-	local equippedSetName, equippedSetId = getEquippedSet()
+	print( dbg:prefix(), "resting Id", restingSetId, "saved Id", equippedSetId )
 
-	AUTO_EQUIP_NONXP_SAVED_ID = equippedSetId
-	AUTO_EQUIP_XPSET_SAVED_ID 	= restSetId 
 
-	autoEquipSavedVars[INDEX_SAVED_SET] = AUTO_EQUIP_NONXP_SAVED_ID
-	autoEquipSavedVars[INDEX_RESTXP_SET] = AUTO_EQUIP_XPSET_SAVED_ID
+	-- If player is already in a resting zone,
+	-- equip the rest XP set.
+	if IsResting() then 
+		C_EquipmentSet.UseEquipmentSet( autoEquipSavedVars[1] )
+	end	
 
 	C_UI.Reload()
-	return result
 end
 
 local eventFrame = CreateFrame("Frame" )
 eventFrame:RegisterEvent( "ADDON_LOADED")
 eventFrame:RegisterEvent( "PLAYER_UPDATE_RESTING")
+eventFrame:RegisterEvent( "EQUIPMENT_SWAP_PENDING")
+eventFrame:RegisterEvent( "EQUIPMENT_SWAP_FINISHED")
 
 eventFrame:SetScript("OnEvent",
 function( self, event, ... )
 	local arg =	{...}
-	local prevId = nil
-	local currentId = nil
+	if event == "EQUIPMENT_SWAP_FINISHED" then
+		-- local setName, setId, isEquipped = getEquippedSet()
+	end
+
+	if event == "EQUIPMENT_SWAP_PENDING" then
+		-- local setName, setId, isEquipped = getEquippedSet()
+		-- print( event, "previous set?", setName )
+	end
 
 	if event == "PLAYER_UPDATE_RESTING" then
-		-- Return if saved vars have not been set.
-		if AUTO_EQUIP_XPSET_SAVED_ID == nil then return end
-		if AUTO_EQUIP_NONXP_SAVED_ID == nil then return end
-
+		-- Return if saved vars have not yet been set.
+		if autoEquipSavedVars == nil then return end
 		local msg = nil
-		local equipSetName, equipSetId = getEquippedSet()
-		local restedSetName = getSetNameByID( AUTO_EQUIP_XPSET_SAVED_ID )
 
- 		if IsResting() then -- player is in a resting zone. Equip the INDEX_RESTXP_SET set
+		local restingSetName 	= getSetNameByID( autoEquipSavedVars[1] )
+		local savedSetName 		= getSetNameByID( autoEquipSavedVars[2])
 
-			if equipSetId ~= AUTO_EQUIP_XPSET_SAVED_ID then
-				-- Now, switch to the resting XP set
-				equipSetByID( AUTO_EQUIP_XPSET_SAVED_ID )
-				
-				msg = sprintf("ENTERED Rest area: switched to %s, from %s.", restedSetName, equipSetName )
-			else
-				msg = sprintf("In Rest area: %s already equipped.", restedSetName )
-			end
-		else	-- LEAVING rested zone. EQUIP the SAVED_SET set
-
-			equipSetByID( AUTO_EQUIP_NONXP_SAVED_ID)
-			equipSetName = getSetNameByID( AUTO_EQUIP_NONXP_SAVED_ID)
-
-			
-			msg = sprintf("LEFT Rest area: switched to %s from %s.", equipSetName, restedSetName )
+		if IsResting() then
+			-- Player has entered, or already is in a resting zone. If not already set, 
+			-- equip the specified resting XP set.
+			C_EquipmentSet.UseEquipmentSet( autoEquipSavedVars[1] )
+			msg = sprintf("ENTERED Rest Area: switched to %s (Id = %d).", restingSetName, autoEquipSavedVars[1] )
+		else
+			-- Player has left the resting zone or is not in one.
+			C_EquipmentSet.UseEquipmentSet( autoEquipSavedVars[2] )
+			msg = sprintf("LEFT Rest area: switched to %s (Id = %d).", savedSetName, autoEquipSavedVars[2] )
 		end
-		UIErrorsFrame:AddMessage( msg, 0.0, 1.0, 0.0 )
-		DEFAULT_CHAT_FRAME:AddMessage( msg, 0.0, 1.0, 0.0 )
+		UIErrorsFrame:AddMessage( msg, 0.0, 0.5, 0.5 )
+		DEFAULT_CHAT_FRAME:AddMessage( msg, 0.0, 0.5, 0.5 )
 	end
 	if event == "ADDON_LOADED" and arg[1] == L["ADDON_NAME"] then
 
-		if AUTO_EQUIP_XPSET_SAVED_ID == nil then
-			autoEquipSavedVars[INDEX_RESTXP_SET] = nil
-			autoEquipSavedVars[INDEX_SAVED_SET]  = nil
-		else
-			autoEquipSavedVars[INDEX_RESTXP_SET] = AUTO_EQUIP_XPSET_SAVED_ID
-			autoEquipSavedVars[INDEX_SAVED_SET]  = AUTO_EQUIP_NONXP_SAVED_ID
+		if autoEquipSavedVars == nil then
+			autoEquipSavedVars = {}
 		end
+
 		DEFAULT_CHAT_FRAME:AddMessage( L["ADDON_LOADED_MSG"],  1.0, 1.0, 0.0 )
 		eventFrame:UnregisterEvent( "ADDON_LOADED")
 		return
@@ -215,15 +182,14 @@ function equip:enumSets()
 	end
 end
 function equip:getEquippedSet()
-	local setId, setName, isEquipped = getEquippedSet()
-	return setName, setId
+	local setName, setId, isEquipped = getEquippedSet()
+	return setName, setId, isEquipped
 end
 function equip:set( setName ) -- param may be a name (string) or Id (number)
 	local setId = getSetIdByName ( setName )
-	result = equipSetByID( setId )
+	result = C_EquipmentSet.UseEquipmentSet( setId )
 	if not result[1] then msgf:postResult( result ) end
 end
-if equipdbg:debuggingIsEnabled() then
-	local fileName = "AutoEquip.lua"
-	DEFAULT_CHAT_FRAME:AddMessage( sprintf("%s loaded", fileName), 1.0, 1.0, 0.0 )
-end
+
+local fileName = "AutoEquip.lua"
+DEFAULT_CHAT_FRAME:AddMessage( sprintf("%s loaded", fileName), 1.0, 1.0, 0.0 )
