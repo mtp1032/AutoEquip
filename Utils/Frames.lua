@@ -159,40 +159,9 @@ end
 --------------------------------------------------------------------------
 --                   THESE ARE THE APPLICATION FRAMES
 --------------------------------------------------------------------------
---  Create the frame where the events are logged
-function frames:createCombatEventLog( title )
-	local f = createTopFrame("CombatEventLogFrame", 700, 225, 0, 0, 0 )
-	f:SetResizable( true )
-	if center then
-		f:SetPoint("CENTER", 10, 300 )
-	else
-		f:SetPoint("TOPLEFT", 10, -40 )
-	end
-	f:SetFrameStrata("BACKGROUND")
-	f:SetAlpha(1)
-	f:EnableMouse(true)
-	f:EnableMouseWheel(true)
-	f:SetMovable(true)
-	f:Hide()
-	f:RegisterForDrag("LeftButton")
-	f:SetScript("OnDragStart", f.StartMoving)
-	f:SetScript("OnDragStop", f.StopMovingOrSizing)
-    
-	f.title = f:CreateFontString(nil, "OVERLAY")
-	f.title:SetFontObject("GameFontHighlight")
-	f.title:SetPoint("CENTER", f.TitleBg, "CENTER", 5, 0)
-	f.title:SetText( title )
-
-	-- Create/Add the buttons
-	createResizeButton(f)
-	createSelectButton(f,"BOTTOMRIGHT", 5,5)
-	createClearButton(f,"BOTTOMLEFT", 5,5)
-	createTextDisplay(f)
-    return f
-end
 --  Create the frame where error messages are posted
 function frames:createErrorMsgFrame(title)
-    local f = createTopFrame( "ErrorMsgFrame",600, 200, 0, 0 )
+    local f = createTopFrame( "Errors",600, 200, 0, 0 )
     f:SetPoint("CENTER", 0, 200)
     f:SetFrameStrata("BACKGROUND")
     f:EnableMouse(true)
@@ -216,10 +185,10 @@ function frames:createErrorMsgFrame(title)
     return f
 end
 function frames:printErrorMsg( msg )
-        UIErrorsFrame:AddMessage( msg, 1.0, 1.0, 0.0, nil, true ) 
+        UIErrorsFrame:AddMessage( msg, 1.0, 0.0, 0.0 ) 
 end
 function frames:printInfoMsg( msg )
-    UIErrorsFrame:AddMessage( msg, 1.0, 1.0, 0.0, nil, 10 ) 
+    UIErrorsFrame:AddMessage( msg, 1.0, 1.0, 0.0 ) 
 end
 --  Create the frame where info messages are posted
 function frames:createMsgFrame( title )
