@@ -70,6 +70,7 @@ local function createArmorSetIcon( f, setName, iconFileId, i )
 	local BUTTON_HEIGHT = 48
 
 	local btn = CreateFrame("Button",nil, f,"TooltipBackdropTemplate")
+	btn.isComplete = true
 	btn:SetSize( BUTTON_WIDTH, BUTTON_HEIGHT )
 	btn:SetPoint( "LEFT", (BUTTON_WIDTH + 10) * (i + 2) + 20, -50 )
 
@@ -99,23 +100,17 @@ local function createArmorSetIcon( f, setName, iconFileId, i )
 		local result = {SUCCESS, EMPTY_STR, EMPTY_STR }
 
 		local equipSetName = btn.Name:GetText()
-		equip:setRestXpSet( equipSetName )
-		-- ClearCursor()
-		-- f:SetText("")
+		local result = equip:setRestXpSet( equipSetName )
+		if not result[1] then
+			msgf:postResult( result )
+			return
+		end
 		optionsPanel:Hide()
+		C_UI.Reload()
 	end)
 	return btn
 end
----- INPUT DIALOG BOX
-local function createInputDialogBox(frame, title, XPOS, YPOS) -- creates the input Dialog box
-	local equippedSetName = equip:getEquippedSet()
-	local title = sprintf("Currently Equipped: %s.\n", equippedSetName )
-	local DescrSubHeader = frame:CreateFontString(nil, "ARTWORK","GameFontNormal")
-    DescrSubHeader:SetPoint("LEFT", XPOS, YPOS)
-	DescrSubHeader:SetJustifyH("LEFT")
-	DescrSubHeader:SetText( title )
-end
--- Option Menu Settings
+-- -- Option Menu Settings
 local FRAME_WIDTH 		= 600
 local FRAME_HEIGHT 		= 300
 local TITLE_BAR_WIDTH 	= 600
@@ -170,11 +165,21 @@ local function createOptionsPanel()
 
 	frame.btn = {}
 	local setIDs = C_EquipmentSet.GetEquipmentSetIDs()
+	local iconFileID = nil
+	local armorSetIcon = nil
+
 	for i = 1, #setIDs do
-		local setName, iconFileId = C_EquipmentSet.GetEquipmentSetInfo( setIDs[i] )
-		frame.btn[i] = createArmorSetIcon ( frame, setName, iconFileId, i )
+		local setName, iconFileId,setId,_, numItems, numEquipped, numInInventory = C_EquipmentSet.GetEquipmentSetInfo( setIDs[i] )
+		if numItems == numEquipped + numInInventory then
+			iconFileID = iconFileId
+		else
+			iconFileID = 134400
+			msgf:postMsg( sprintf("The %s set is missing one or more items\n", setName ))
+			armorSetIcon = createArmorSetIcon ( frame, setName, iconFileID, i )
+			armorSetIcon.IsComplete = false
+		end
+		frame.btn[i] = createArmorSetIcon ( frame, setName, iconFileID, i )
 	end
-	
     -------------------- DESCRIPTION ---------------------------------------
     local DescrSubHeader = frame:CreateFontString(nil, "ARTWORK","GameFontNormal")
 	local messageText = frame:CreateFontString(nil, "ARTWORK","GameFontNormal")
@@ -190,20 +195,17 @@ local function createOptionsPanel()
 
 	-- drawLine( 220, frame )
 	drawLine( 0, frame )
-	-- coords for line
-	local xPos = 20
-	local yPos = -250
-	local yOffset = -20
-
-	xPos = 40
-	yPos = yPos + yOffset
-
-	-- create and display the input dialog box for specifying the dummy target's health
-	acceptButton = createInputDialogBox(frame, 
-										info,
-										20, 
-										-100)
-
+	local equippedSet = equip:getEquippedSet()
+	if equippedSet == nil then
+		msgf:postMsg( sprintf("No usable equipment sets available. Usually this error\noccurs when one or more items are missing\n"))
+		equippedSet = "N/A"
+	end
+	local msgText = sprintf("Currently Equipped: %s\n", equippedSet )
+	local equippedSet = frame:CreateFontString(nil, "ARTWORK","GameFontNormal")
+	equippedSet:SetPoint("LEFT", 120, -100)
+	equippedSet:SetText( msgText )
+	equippedSet:SetJustifyH("LEFT")
+	
 	frame:Show() 
 	return frame   
 end
