@@ -31,9 +31,9 @@ Utils\Utils.lua
 Utils\Frames.lua
 Utils\MsgFrame.lua
 ##
+Sources\AutoEquip.lua
 Sources\OptionsMenu.lua
 Sources\MinimapIcon.lua
-Sources\AutoEquip.lua
 
 ##--------------------------------------------
 ## UNIT UnitTests
