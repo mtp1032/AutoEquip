@@ -44,7 +44,13 @@ local AutoEquip_DB = LibStub("LibDataBroker-1.1"):NewDataObject(enus.ADDON_NAME,
 		OnClick = function(self, button )
 			-- LEFT CLICK - Display the options menu
 			if button == "LeftButton" and not IsShiftKeyDown() then 
-				menu:show()
+				local anyAvailable, reason = equip:setsAreAvailable()
+				if not anyAvailable then 
+					msgf:postErrorMsg( reason ) 
+					-- menu:hide()
+				else
+					menu:show()
+				end
 			end
 	end,
 	})
