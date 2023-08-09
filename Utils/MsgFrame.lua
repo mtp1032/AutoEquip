@@ -14,7 +14,8 @@ local FAILURE = enus.FAILURE
 
 local frameTitle = L["USER_MSG_FRAME"]
 local msgFrame = frames:createMsgFrame( frameTitle)
-local frameTitle = sprintf("AutoEquip (V 1.0.0)" )
+
+local frameTitle = sprintf("ERROR: AutoEquip (V 1.0.0)" )
 local errorMsgFrame = frames:createErrorMsgFrame(frameTitle)
 
 function msgf:getMsgFrame()
@@ -43,6 +44,10 @@ end
 function msgf:postMsg( msg )
 	frames:showFrame( msgFrame )
 	msgFrame.Text:Insert( msg )
+end
+function msgf:postErrorMsg( msg )
+	frames:showFrame( errorMsgFrame )
+	errorMsgFrame.Text:Insert( msg )
 end
 function msgf:postResult( result )
 
