@@ -13,24 +13,24 @@ enus.SUCCESS	= true
 enus.FAILURE	= false
 local dbg = equipdbg
 
-local EXPANSION_LEVEL	= nil
+local expansionLevel	= nil
 local SUCCESS 	        = enus.SUCCESS
 local FAILURE 	        = enus.FAILURE
 local EMPTY_STR 	    = enus.EMPTY_STR
 
-local EXPANSION_LEVEL = GetServerExpansionLevel()
+local expansionLevel = GetServerExpansionLevel()
 
 function enus:getAddonName()
 	local stackTrace = debugstack(2)
 	local dirNames = nil
 	local addonName = nil
 
-	if 	EXPANSION_LEVEL == LE_EXPANSION_DRAGONFLIGHT then
+	if 	expansionLevel == LE_EXPANSION_DRAGONFLIGHT then
 		dirNames = {strsplittable( "\/", stackTrace, 5 )}	end
-	if EXPANSION_LEVEL == LE_EXPANSION_WRATH_OF_THE_LICH_KING then
+	if expansionLevel == LE_EXPANSION_WRATH_OF_THE_LICH_KING then
 		dirNames = {strsplittable( "\/", stackTrace, 5 )}
 	end
-	if EXPANSION_LEVEL == LE_EXPANSION_CLASSIC then
+	if expansionLevel == LE_EXPANSION_CLASSIC then
 		dirNames = {strsplittable( "\/", stackTrace, 5 )}
 	end
 
@@ -42,16 +42,16 @@ enus.ADDON_NAME 	= enus:getAddonName()
 enus.ADDON_VERSION 	= GetAddOnMetadata( enus.ADDON_NAME, "Version")
 local ADDON_NAME	= enus.ADDON_NAME
 local ADDON_VERSION	= enus.ADDON_VERSION
-if EXPANSION_LEVEL == LE_EXPANSION_CLASSIC then
+
+if expansionLevel == LE_EXPANSION_CLASSIC then
 	enus.EXPANSION_NAME = "Classic (Vanilla)"
 end 
-if EXPANSION_LEVEL == LE_EXPANSION_WRATH_OF_THE_LICH_KING then 
+if expansionLevel == LE_EXPANSION_WRATH_OF_THE_LICH_KING then 
 	enus.EXPANSION_NAME = "Classic (WotLK)"
 end
-if EXPANSION_LEVEL == LE_EXPANSION_DRAGONFLIGHT then
-	enus.EXPANSION_NAME = "Retail (Dragon Flight)"
+if expansionLevel == LE_EXPANSION_DRAGONFLIGHT then
+	enus.EXPANSION_NAME = "Dragon Flight"
 end
-
 
 local L = setmetatable({}, { __index = function(t, k)
 	local v = tostring(k)
@@ -69,13 +69,13 @@ if LOCALE == "enUS" then
 	L["VERSION"]			= ADDON_VERSION
 	L["EXPANSION_NAME"]		= enus.EXPANSION_NAME 
 
-	L["ADDON_AND_VERSION"] 	= sprintf("%s (v%s %s)", L["ADDON_NAME"], L["VERSION"], L["EXPANSION_NAME"] )
+	L["ADDON_AND_VERSION"] 	= sprintf("%s v%s (%s)", L["ADDON_NAME"], L["VERSION"], L["EXPANSION_NAME"] )
 
 	L["ERROR_MSG_FRAME_TITLE"]			= "Error"
 	L["USER_MSG_FRAME"]					= sprintf("%s %s", L["ADDON_AND_VERSION"], "User Messages")
 	L["LEFT_CLICK_FOR_OPTIONS_MENU"] 	= "Left Click to display In-Game Options Menu."
 	L["HELP_FRAME_TITLE"]				= sprintf("Help: %s", L["ADDON_AND_VERSION"])
-	L["ADDON_LOADED_MSG"]				= sprintf("%s.", L["ADDON_AND_VERSION"])
+	L["ADDON_LOADED_MSG"]				= sprintf("%s Loaded.", L["ADDON_AND_VERSION"])
 
 	-- bod Specific
 	L["LEFTCLICK_FOR_OPTIONS_MENU"]			= sprintf( "Left click to display the %s Options Menu.", L["ADDON_NAME"] )
