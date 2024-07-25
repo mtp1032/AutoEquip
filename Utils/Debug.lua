@@ -6,7 +6,6 @@
 local _, AutoEquip = ...
 AutoEquip.Debug = {}	  
 equipdbg = AutoEquip.Debug	-- use for error reporting services
-local sprintf = _G.string.format
 
 equipdbg.EMPTY_STR 	= ""
 equipdbg.SUCCESS		= true
@@ -28,7 +27,7 @@ function equipdbg:simpleStackTrace( stackTrace )
 	local pieces = {strsplit( ":", str, 5 )}
 	local len = strlen( pieces[1])
 	dir = string.sub( pieces[1], 1, len - 2 )
-	local simple = sprintf("%s]%d", dir, pieces[2])
+	local simple = string.format("%s]%d", dir, pieces[2])
 	return simple
 end
 function equipdbg:prefix( stackTrace )
@@ -44,7 +43,7 @@ function equipdbg:prefix( stackTrace )
 	local fileName = string.sub( fileName, 1, strLen - 2 )
 	local names = strsplittable( "\/", fileName )
 	local lineNumber = tonumber(pieces[2])
-	local location = sprintf("[%s:%d] ", names[#names], lineNumber)
+	local location = string.format("[%s:%d] ", names[#names], lineNumber)
 	return location
 end
 function equipdbg:print( msg )
@@ -52,7 +51,7 @@ function equipdbg:print( msg )
 	-- print(fileAndLine .. " " .. msg)
 	local str = msg
 	if str then
-		str = sprintf("%s %s", fileAndLine, str )
+		str = string.format("%s %s", fileAndLine, str )
 	else
 		str = fileAndLine
 	end
@@ -79,5 +78,5 @@ end
 
 if DEBUGGING_ENABLED then
 	local fileName = "Debug.lua" 
-	DEFAULT_CHAT_FRAME:AddMessage( sprintf("%s loaded", fileName), 1.0, 1.0, 0.0 )
+	DEFAULT_CHAT_FRAME:AddMessage( string.format("%s loaded", fileName), 1.0, 1.0, 0.0 )
 end

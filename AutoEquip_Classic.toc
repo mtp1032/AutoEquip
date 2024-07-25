@@ -1,4 +1,4 @@
-## Interface: 30402
+## Interface: 11503
 ## Title: AutoEquip
 ## Version: 0.1.9
 ## X-MAJOR: 0
@@ -9,7 +9,7 @@
 ## 26 April, 2023
 ## OptionalDeps: LibSharedMedia-3.0, LibDBIcon-1.0, LibDataBroker-1.1
 ## IconTexture: 894556
-## X-github: https://github.com/mtp1032/AutoEquip
+## X-github: https://github.com/mtp1032/AutoEquip 
 ## X-Expansions: WotLK, Retail
 
 #@no-lib-strip@

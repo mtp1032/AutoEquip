@@ -8,7 +8,6 @@ AutoEquip.Utils = {}
 utils = AutoEquip.Utils
 
 local L = AutoEquip.L
-local sprintf = _G.string.format
 local dbg = equipdbg
 
 function utils:displayMsg( msg )
@@ -25,5 +24,5 @@ function utils:copyTable(t)
   
 local fileName = "Utils.lua"
 if dbg:debuggingIsEnabled() then
-	DEFAULT_CHAT_FRAME:AddMessage( sprintf("%s loaded", fileName), 1.0, 1.0, 0.0 )
+	DEFAULT_CHAT_FRAME:AddMessage( string.format("%s loaded", fileName), 1.0, 1.0, 0.0 )
 end

@@ -5,8 +5,7 @@
 --------------------------------------------------------------------------------------
 local _, AutoEquip = ... 
 AutoEquip.MsgFrame = {}
-msgf = AutoEquip.MsgFrame
-local sprintf = _G.string.format 
+auto = AutoEquip.MsgFrame
 local L = AutoEquip.L
 local dbg = equipdbg
 
@@ -15,25 +14,25 @@ local FAILURE = enus.FAILURE
 local frameTitle = L["USER_MSG_FRAME"]
 local msgFrame = frames:createMsgFrame( frameTitle)
 
-local frameTitle = sprintf("ERROR: AutoEquip (V 1.0.0)" )
+local frameTitle = string.format("ERROR: AutoEquip (V 1.0.0)" )
 local errorMsgFrame = frames:createErrorMsgFrame(frameTitle)
 
-function msgf:getMsgFrame()
+function auto:getMsgFrame()
 	return msgFrame
 end
-function msgf:showFrame()
+function auto:showFrame()
 	frames:showFrame( msgFrame )
 end
-function msgf:eraseText()  
+function auto:eraseText()  
 	frames:clearFrame( msgFrame )
 end
-function msgf:hideFrame()
+function auto:hideFrame()
 	frames:hideFrame( msgFrame )
 end
-function msgf:hideMeter()
+function auto:hideMeter()
 	frames:hideMeter( msgFrame )
 end
-function msgf:showMeter()
+function auto:showMeter()
     if errorMsgFrame == nil then 
         return
 	end
@@ -41,28 +40,28 @@ function msgf:showMeter()
 		errorMsgFrame:Show()
 	end
 end
-function msgf:postMsg( msg )
+function auto:postMsg( msg )
 	frames:showFrame( msgFrame )
 	msgFrame.Text:Insert( msg )
 end
-function msgf:postErrorMsg( msg )
+function auto:postErrorMsg( msg )
 	frames:showFrame( errorMsgFrame )
 	errorMsgFrame.Text:Insert( msg )
 end
-function msgf:postResult( result )
+function auto:postResult( result )
 
 	if result[1] ~= FAILURE then return end
 	
-	local resultString = sprintf("[FAILURE] %s\n%s", result[2], result[3] )
+	local resultString = string.format("[FAILURE] %s\n%s", result[2], result[3] )
 	errorMsgFrame.Text:Insert( resultString )
 	errorMsgFrame:Show()
 end
-function msgf:clearText()
+function auto:clearText()
 	fm:clearFrameText()
 end
 
 local fileName = "MsgFrame.lua"
 if dbg:debuggingIsEnabled() then
-	DEFAULT_CHAT_FRAME:AddMessage( sprintf("%s loaded", fileName), 1.0, 1.0, 0.0 )
+	DEFAULT_CHAT_FRAME:AddMessage( string.format("%s loaded", fileName), 1.0, 1.0, 0.0 )
 end
 

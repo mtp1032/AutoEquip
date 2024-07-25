@@ -6,7 +6,6 @@
 local _, AutoEquip = ...
 AutoEquip.Frames = {}
 frames = AutoEquip.Frames
-local sprintf = _G.string.format
 local L = AutoEquip.L
 local dbg = equipdbg
 
@@ -246,7 +245,7 @@ end
 
 local fileName = "Frames.lua"
 if dbg:debuggingIsEnabled() then
-	DEFAULT_CHAT_FRAME:AddMessage( sprintf("%s loaded", fileName), 1.0, 1.0, 0.0 )
+	DEFAULT_CHAT_FRAME:AddMessage( string.format("%s loaded", fileName), 1.0, 1.0, 0.0 )
 end
 
 
