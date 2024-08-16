@@ -6,6 +6,8 @@
 local _, AutoEquip = ...
 AutoEquip.MiniMapIcon = {}
 icon = AutoEquip.MiniMapIcon
+local enus = AutoEquip.EnUS_AutoEquip
+
 
 local L = AutoEquip.L
 local dbg = equipdbg
@@ -59,9 +61,4 @@ function addon:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("AutoEquip_DB", 
         { profile = { minimap = { hide = false, }, }, }) 
     icon:Register(addonName, AutoEquip_DB, self.db.profile.minimap)
-end
-
-local fileName = "MiniMapIcon.lua"
-if dbg:debuggingIsEnabled() then
-    DEFAULT_CHAT_FRAME:AddMessage(string.format("%s loaded", fileName), 1.0, 1.0, 0.0)
 end

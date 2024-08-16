@@ -186,8 +186,3 @@ function menu:hide()
 		optionsPanel:Hide()
 	end
 end
-
-local fileName = "OptionsMenu.lua"
-if dbg:debuggingIsEnabled() then
-	DEFAULT_CHAT_FRAME:AddMessage(string.format("%s loaded", fileName), 1.0, 1.0, 0.0)
-end

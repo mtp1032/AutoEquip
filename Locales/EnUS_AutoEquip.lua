@@ -5,7 +5,7 @@
 ----------------------------------------------------------------------------------------
 local _, AutoEquip = ...
 AutoEquip.EnUS_AutoEquip = {}
-enus = AutoEquip.EnUS_AutoEquip
+local enus = AutoEquip.EnUS_AutoEquip
 
 enus.EMPTY_STR = ""
 enus.SUCCESS	= true
@@ -38,7 +38,7 @@ function enus:getAddonName()
 end
 
 enus.ADDON_NAME 	= enus:getAddonName() 
-enus.ADDON_VERSION 	= GetAddOnMetadata( enus.ADDON_NAME, "Version")
+enus.ADDON_VERSION 	= C_AddOns.GetAddOnMetadata( enus.ADDON_NAME, "Version")
 local ADDON_NAME	= enus.ADDON_NAME
 local ADDON_VERSION	= enus.ADDON_VERSION
 
@@ -91,8 +91,3 @@ if LOCALE == "enUS" then
 	L["AVAILABLE_SETS"]			= "Available sets: "
 
 end
-if dbg:debuggingIsEnabled() then
-	local fileName = "EnUS_AutoEquip.lua"
-	DEFAULT_CHAT_FRAME:AddMessage( string.format("%s loaded", fileName), 1.0, 1.0, 0.0 )
-end
-

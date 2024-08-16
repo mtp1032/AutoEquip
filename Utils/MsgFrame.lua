@@ -5,6 +5,8 @@
 --------------------------------------------------------------------------------------
 local _, AutoEquip = ... 
 AutoEquip.MsgFrame = {}
+local enus = AutoEquip.EnUS_AutoEquip
+
 auto = AutoEquip.MsgFrame
 local L = AutoEquip.L
 local dbg = equipdbg
@@ -58,10 +60,5 @@ function auto:postResult( result )
 end
 function auto:clearText()
 	fm:clearFrameText()
-end
-
-local fileName = "MsgFrame.lua"
-if dbg:debuggingIsEnabled() then
-	DEFAULT_CHAT_FRAME:AddMessage( string.format("%s loaded", fileName), 1.0, 1.0, 0.0 )
 end
 

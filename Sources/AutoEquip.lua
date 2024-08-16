@@ -27,7 +27,6 @@ local function initializeSavedVariables()
     if autoEquip_SavedPriorSetId == nil then
         autoEquip_SavedPriorSetId = nil
     end
-    print(equipdbg:prefix(), "Saved Variables Initialized:", autoEquip_SavedRestingSetId, autoEquip_SavedPriorSetId)
 end
 
 local dbg = equipdbg
@@ -262,9 +261,4 @@ function equip:set(setName)
     local result = equipSetByName(setName)
     result = C_EquipmentSet.UseEquipmentSet(setId)
     if not result[1] then auto:postResult(result) end
-end
-
-if dbg:debuggingIsEnabled() then
-    local fileName = "AutoEquip.lua"
-    DEFAULT_CHAT_FRAME:AddMessage(string.format("%s loaded", fileName), 1.0, 1.0, 0.0)
 end

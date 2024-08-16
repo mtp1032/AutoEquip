@@ -1,4 +1,4 @@
-## Interface: 100207,110000,110002
+## Interface: 11502, 11503, 20504, 30403, 40400, 100207, 110000, 110002
 ## -----------------------------------------------------------------------
 ## Title: AutoEquip
 ## Version: 0.1.9
@@ -30,7 +30,6 @@ LibACE\AceDB-3.0\AceDB-3.0.xml
 Utils\Debug.lua
 Locales\EnUS_AutoEquip.lua
 ##
-Utils\Utils.lua
 Utils\Frames.lua
 Utils\MsgFrame.lua
 ##

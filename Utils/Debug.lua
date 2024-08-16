@@ -8,14 +8,12 @@ AutoEquip.Debug = {}
 equipdbg = AutoEquip.Debug	-- use for error reporting services
 
 equipdbg.EMPTY_STR 	= ""
-equipdbg.SUCCESS		= true
-equipdbg.FAILURE		= false
+equipdbg.SUCCESS	= true
+equipdbg.FAILURE	= false
 
 local EMPTY_STR		= equipdbg.EMPTY_STR
 local SUCCESS		= equipdbg.SUCCESS
 local FAILURE		= equipdbg.FAILURE
-
-local DEBUGGING_ENABLED = false
 
 ---------------------------------------------------------------------------------------------------
 --                      PUBLIC/EXPORTED FUNCTIONS
@@ -57,26 +55,8 @@ function equipdbg:print( msg )
 	end
 	DEFAULT_CHAT_FRAME:AddMessage( str, 0.0, 1.0, 1.0 )
 end	
-function equipdbg:printx( ... )
-	-- see https://us.forums.blizzard.com/en/wow/t/scope-issue/1547258/3
-	print( equipdbg:prefix(), ... )
-end
 function equipdbg:setResult( errMsg, stackTrace )
 	local result = {FAILURE, EMPTY_STR, EMPTY_STR }
 		result = { FAILURE, errMsg, stackTrace }
 	return result
-end
-function equipdbg:enableDebugging()
-	equipdbg.DEBUGGING_ENABLED = true
-end
-function equipdbg:disableDebugging()
-	equipdbg.DEBUGGING_ENABLED = false
-end
-function equipdbg:debuggingIsEnabled()
-	return DEBUGGING_ENABLED
-end
-
-if DEBUGGING_ENABLED then
-	local fileName = "Debug.lua" 
-	DEFAULT_CHAT_FRAME:AddMessage( string.format("%s loaded", fileName), 1.0, 1.0, 0.0 )
 end
