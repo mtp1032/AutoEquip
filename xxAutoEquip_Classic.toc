@@ -1,4 +1,4 @@
-## Interface: 40400
+## Interface: 11503
 ## Title: AutoEquip
 ## Version: 0.1.9
 ## X-MAJOR: 0
@@ -28,7 +28,7 @@ LibACE\AceDB-3.0\AceDB-3.0.xml
 ## Required / prerequisite files
 ##---------------------------------------------
 Utils\Debug.lua
-Locales\EnUS_AutoEquip.lua
+Locales\Locales.lua
 ##
 Utils\Utils.lua
 Utils\Frames.lua

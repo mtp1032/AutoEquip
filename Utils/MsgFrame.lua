@@ -3,15 +3,17 @@
 -- AUTHOR: Michael Peterson
 -- ORIGINAL DATE: 16 April, 2023
 --------------------------------------------------------------------------------------
-local _, AutoEquip = ... 
+local ADDON_NAME, AutoEquip = ... 
+
+AutoEquip = AutoEquip or {}
 AutoEquip.MsgFrame = {}
-local enus = AutoEquip.EnUS_AutoEquip
+local msgFrame = AutoEquip.MsgFrame
+local frames = AutoEquip.Frames
 
-auto = AutoEquip.MsgFrame
-local L = AutoEquip.L
-local dbg = equipdbg
+local L = AutoEquip.Locales
+local dbg = AutoEquip.Debug
 
-local FAILURE = enus.FAILURE
+local FAILURE = false
 
 local frameTitle = L["USER_MSG_FRAME"]
 local msgFrame = frames:createMsgFrame( frameTitle)
@@ -19,22 +21,22 @@ local msgFrame = frames:createMsgFrame( frameTitle)
 local frameTitle = string.format("ERROR: AutoEquip (V 1.0.0)" )
 local errorMsgFrame = frames:createErrorMsgFrame(frameTitle)
 
-function auto:getMsgFrame()
+function msgFrame:getMsgFrame()
 	return msgFrame
 end
-function auto:showFrame()
+function msgFrame:showFrame()
 	frames:showFrame( msgFrame )
 end
-function auto:eraseText()  
+function msgFrame:eraseText()  
 	frames:clearFrame( msgFrame )
 end
-function auto:hideFrame()
+function msgFrame:hideFrame()
 	frames:hideFrame( msgFrame )
 end
-function auto:hideMeter()
+function msgFrame:hideMeter()
 	frames:hideMeter( msgFrame )
 end
-function auto:showMeter()
+function msgFrame:showMeter()
     if errorMsgFrame == nil then 
         return
 	end
@@ -42,15 +44,15 @@ function auto:showMeter()
 		errorMsgFrame:Show()
 	end
 end
-function auto:postMsg( msg )
+function msgFrame:postMsg( msg )
 	frames:showFrame( msgFrame )
-	msgFrame.Text:Insert( msg )
+	frames.Text:Insert( msg )
 end
-function auto:postErrorMsg( msg )
+function msgFrame:postErrorMsg( msg )
 	frames:showFrame( errorMsgFrame )
 	errorMsgFrame.Text:Insert( msg )
 end
-function auto:postResult( result )
+function msgFrame:postResult( result )
 
 	if result[1] ~= FAILURE then return end
 	
@@ -58,7 +60,7 @@ function auto:postResult( result )
 	errorMsgFrame.Text:Insert( resultString )
 	errorMsgFrame:Show()
 end
-function auto:clearText()
-	fm:clearFrameText()
+function msgFrame:clearText()
+	frames:clearFrameText()
 end
 

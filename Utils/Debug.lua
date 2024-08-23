@@ -3,22 +3,21 @@
 -- AUTHOR: Michael Peterson
 -- ORIGINAL DATE: 16 April, 2023
 --------------------------------------------------------------------------------------
-local _, AutoEquip = ...
+
+local ADDON_NAME, AutoEquip = ...
+
+AutoEquip = AutoEquip or {}
 AutoEquip.Debug = {}	  
-equipdbg = AutoEquip.Debug	-- use for error reporting services
+local dbg = AutoEquip.Debug	-- use for error reporting services
 
-equipdbg.EMPTY_STR 	= ""
-equipdbg.SUCCESS	= true
-equipdbg.FAILURE	= false
-
-local EMPTY_STR		= equipdbg.EMPTY_STR
-local SUCCESS		= equipdbg.SUCCESS
-local FAILURE		= equipdbg.FAILURE
+local EMPTY_STR 	= ""
+local SUCCESS	= true
+local FAILURE	= false
 
 ---------------------------------------------------------------------------------------------------
 --                      PUBLIC/EXPORTED FUNCTIONS
 ----------------------------------------------------------------------------------------------------
-function equipdbg:simpleStackTrace( stackTrace )
+function dbg:simpleStackTrace( stackTrace )
 	if stackTrace == nil then stackTrace = debugstack(2) end
 
 	local str = string.sub( stackTrace, 28 )
@@ -28,7 +27,7 @@ function equipdbg:simpleStackTrace( stackTrace )
 	local simple = string.format("%s]%d", dir, pieces[2])
 	return simple
 end
-function equipdbg:prefix( stackTrace )
+function dbg:prefix( stackTrace )
 	if stackTrace == nil then stackTrace = debugstack(2) end
 	-- print( stackTrace )
 
@@ -44,8 +43,8 @@ function equipdbg:prefix( stackTrace )
 	local location = string.format("[%s:%d] ", names[#names], lineNumber)
 	return location
 end
-function equipdbg:print( msg )
-	local fileAndLine = equipdbg:prefix( debugstack(2) )
+function dbg:print( msg )
+	local fileAndLine = dbg:prefix( debugstack(2) )
 	-- print(fileAndLine .. " " .. msg)
 	local str = msg
 	if str then
@@ -55,8 +54,9 @@ function equipdbg:print( msg )
 	end
 	DEFAULT_CHAT_FRAME:AddMessage( str, 0.0, 1.0, 1.0 )
 end	
-function equipdbg:setResult( errMsg, stackTrace )
+function dbg:setResult( errMsg, stackTrace )
 	local result = {FAILURE, EMPTY_STR, EMPTY_STR }
-		result = { FAILURE, errMsg, stackTrace }
-	return result
+	return 	{ FAILURE, errMsg, stackTrace }
+
 end
+

@@ -3,16 +3,18 @@
 -- AUTHOR: Michael Peterson
 -- ORIGINAL DATE: 16 April, 2023
 --------------------------------------------------------------------------------------
-local _, AutoEquip = ...
+local ADDON_NAME, AutoEquip = ...
+
+AutoEquip = AutoEquip or {}
 AutoEquip.OptionsMenu = {}
-menu = AutoEquip.OptionsMenu
+local menu = AutoEquip.OptionsMenu
+local auto = AutoEquip.AutoEquip
+local dbg = AutoEquip.Debug	-- use for error reporting services
 
-local L = AutoEquip.L
-
-local dbg = equipdbg
-
-local EMPTY_STR = dbg.EMPTY_STR
-local SUCCESS = dbg.SUCCESS
+local L = AutoEquip.Locales
+local EMPTY_STR = ""
+local SUCCESS = true
+local FAILURE = false
 
 ------------------------------------------------------------
 --						SAVED GLOBALS
@@ -68,7 +70,7 @@ local function createArmorSetIcon(f, setName, iconFileId, i)
 	btn:SetScript("OnClick", function(self)
 		local result = {SUCCESS, EMPTY_STR, EMPTY_STR}
 		local equipSetName = btn.Name:GetText()
-		local result = equip:setRestXpSet(equipSetName)
+		local result = auto:setRestXpSet(equipSetName)
 		if not result[1] then
 			auto:postResult(result)
 			return
@@ -170,7 +172,7 @@ function menu:show()
 	if optionsPanel == nil then
 		optionsPanel = createOptionsPanel()
 	end
-	local equippedSetName, _, _ = equip:getEquippedSet()
+	local equippedSetName, _, _ = auto:getEquippedSet()
 	if equippedSetName == nil then
 		equippedSetName = "No Equipment Set Specified."
 	end

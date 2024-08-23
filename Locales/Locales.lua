@@ -1,56 +1,39 @@
 ----------------------------------------------------------------------------------------
--- EnUS_AutoEquip.lua
+-- Locales.lua
 -- AUTHOR: mtpeterson1948 at gmail dot com
 -- ORIGINAL DATE: 26 April, 2023
 ----------------------------------------------------------------------------------------
-local _, AutoEquip = ...
-AutoEquip.EnUS_AutoEquip = {}
-local enus = AutoEquip.EnUS_AutoEquip
+local ADDON_NAME, AutoEquip = ...
 
-enus.EMPTY_STR = ""
-enus.SUCCESS	= true
-enus.FAILURE	= false
-local dbg = equipdbg
+AutoEquip = AutoEquip or {}
+AutoEquip.Locales = {}
+local locale = AutoEquip.Locales
 
-local expansionLevel	= nil
-local SUCCESS 	        = enus.SUCCESS
-local FAILURE 	        = enus.FAILURE
-local EMPTY_STR 	    = enus.EMPTY_STR
+local dbg = AutoEquip.Debug	-- use for error reporting services
+ 
+local EMPTY_STR = ""
+local SUCCESS	= true
+local FAILURE	= false
 
-local expansionLevel = GetServerExpansionLevel()
+local function getExpansionName( )
+    local expansionLevel = GetExpansionLevel()
+    local expansionNames = { -- Use a table to map expansion levels to names
+        [LE_EXPANSION_DRAGONFLIGHT] = "Dragon Flight",
+        [LE_EXPANSION_SHADOWLANDS] = "Shadowlands",
+        [LE_EXPANSION_CATACLYSM] = "Classic (Cataclysm)",
+        [LE_EXPANSION_WRATH_OF_THE_LICH_KING] = "Classic (WotLK)",
+        [LE_EXPANSION_CLASSIC] = "Classic (Vanilla)",
 
-function enus:getAddonName()
-	local stackTrace = debugstack(2)
-	local dirNames = nil
-	local addonName = nil
-
-	if 	expansionLevel == LE_EXPANSION_DRAGONFLIGHT then
-		dirNames = {strsplittable( "\/", stackTrace, 5 )}	end
-	if expansionLevel == LE_EXPANSION_WRATH_OF_THE_LICH_KING then
-		dirNames = {strsplittable( "\/", stackTrace, 5 )}
-	end
-	if expansionLevel == LE_EXPANSION_CLASSIC then
-		dirNames = {strsplittable( "\/", stackTrace, 5 )}
-	end
-
-	addonName = dirNames[1][3]
-	return addonName
+        [LE_EXPANSION_MISTS_OF_PANDARIA] = "Classic (Mists of Pandaria",
+        [LE_EXPANSION_LEGION] = "Classic (Legion)",
+        [LE_EXPANSION_BATTLE_FOR_AZEROTH] = "Classic (Battle for Azeroth)",
+        [LE_EXPANSION_WAR_WITHIN]   = "Retail (The War Within)"
+    }
+    return expansionNames[expansionLevel] -- Directly return the mapped name
 end
 
-enus.ADDON_NAME 	= enus:getAddonName() 
-enus.ADDON_VERSION 	= C_AddOns.GetAddOnMetadata( enus.ADDON_NAME, "Version")
-local ADDON_NAME	= enus.ADDON_NAME
-local ADDON_VERSION	= enus.ADDON_VERSION
-
-if expansionLevel == LE_EXPANSION_CLASSIC then
-	enus.EXPANSION_NAME = "Classic (Vanilla)"
-end 
-if expansionLevel == LE_EXPANSION_WRATH_OF_THE_LICH_KING then 
-	enus.EXPANSION_NAME = "Classic (WotLK)"
-end
-if expansionLevel == LE_EXPANSION_DRAGONFLIGHT then
-	enus.EXPANSION_NAME = "Dragon Flight"
-end
+local ADDON_VERSION 	= C_AddOns.GetAddOnMetadata( ADDON_NAME, "Version")
+local EXPANSION_NAME = getExpansionName()
 
 local L = setmetatable({}, { __index = function(t, k)
 	local v = tostring(k)
@@ -58,7 +41,7 @@ local L = setmetatable({}, { __index = function(t, k)
 	return v
 end })
 
-AutoEquip.L = L
+AutoEquip.Locales = L
 
 -- English translations
 local LOCALE = GetLocale()      -- BLIZZ
@@ -66,7 +49,7 @@ if LOCALE == "enUS" then
 
 	L["ADDON_NAME"]			= ADDON_NAME
 	L["VERSION"]			= ADDON_VERSION
-	L["EXPANSION_NAME"]		= enus.EXPANSION_NAME 
+	L["EXPANSION_NAME"]		= EXPANSION_NAME 
 
 	L["ADDON_AND_VERSION"] 	= string.format("%s v%s (%s)", L["ADDON_NAME"], L["VERSION"], L["EXPANSION_NAME"] )
 

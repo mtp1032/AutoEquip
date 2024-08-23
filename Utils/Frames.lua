@@ -3,11 +3,14 @@
 -- AUTHOR: Michael Peterson
 -- ORIGINAL DATE: 16 April, 2023
 --------------------------------------------------------------------------------------
-local _, AutoEquip = ...
+local ADDON_NAME, AutoEquip = ...
+
+AutoEquip = AutoEquip or {}
 AutoEquip.Frames = {}
-frames = AutoEquip.Frames
-local L = AutoEquip.L
-local dbg = equipdbg
+local frames = AutoEquip.Frames
+
+local L = AutoEquip.Locales
+local dbg = AutoEquip.Debug
 
 -- https://us.forums.blizzard.com/en/wow/t/addons-now-usable-in-shadowlands-beta/586355/16
 -- https://wow.gamepedia.com/API_Frame_SetBackdrop
@@ -242,8 +245,4 @@ function frames:clearFrame(f) -- erases the text in the edit box
 	f.Text:SetText("") 
 	f.Text:ClearFocus()
 end
-
-
-
-
 

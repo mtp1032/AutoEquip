@@ -3,12 +3,20 @@
 -- AUTHOR: Michael Peterson 
 -- ORIGINAL DATE: 26 April, 2023
 --------------------------------------------------------------------------------------
+local ADDON_NAME, AutoEquip = ...
 
-local _, AutoEquip = ...
+------------------------------------------------------------
+--                  NAMESPACE LAYOUT
+------------------------------------------------------------
+AutoEquip = AutoEquip or {}
 AutoEquip.AutoEquip = {}
-equip = AutoEquip.AutoEquip
+local auto = AutoEquip.AutoEquip
 
-local L = AutoEquip.L
+local L = AutoEquip.Locales
+local dbg = AutoEquip.Debug	-- use for error reporting services
+local EMPTY_STR = ""
+local SUCCESS = true
+local FAILURE = false
 
 -- Ensure the saved variables are declared and accessible
 if autoEquip_SavedRestingSetId == nil then
@@ -29,12 +37,7 @@ local function initializeSavedVariables()
     end
 end
 
-local dbg = equipdbg
-local EMPTY_STR = dbg.EMPTY_STR
-local SUCCESS = dbg.SUCCESS
-local FAILURE = dbg.FAILURE
-
-function equip:setsAreAvailable()
+function auto:setsAreAvailable()
     local isValid = true
     local reason = nil
 
@@ -83,7 +86,7 @@ local function getSetNameByID(setId)
         end
     end
     if setName == nil then
-        result = equipdbg:setResult(string.format("Equipment set %d not found", setId), debugstack(2))
+        result = dbg:setResult(string.format("Equipment set %d not found", setId), debugstack(2))
     end
 
     return setName, result
@@ -101,7 +104,7 @@ local function getSetIdByName(setName)
         end
     end
     if setId == nil then
-        result = equipdbg:setResult(string.format("%s equipment set not found", setName), debugstack(2))
+        result = dbg:setResult(string.format("%s equipment set not found", setName), debugstack(2))
     end
 
     return setId, result
@@ -137,14 +140,14 @@ end
 local function equipSetByID(setId)
     local result = { SUCCESS, EMPTY_STR, EMPTY_STR }
     if setId == nil then
-        result = equipdbg:setResult(errMsg, equipdbg:simpleStackTrace())
+        result = dbg:setResult(errMsg, dbg:simpleStackTrace())
         return result
     end
     
     local setName = getSetNameByID(setId)
     if setName == nil then
         local errMsg = string.format("%d Not found. Set Could not be equipped!\n", setId)
-        result = equipdbg:setResult(errMsg, equipdbg:simpleStackTrace())
+        result = dbg:setResult(errMsg, dbg:simpleStackTrace())
         return result
     end
     C_EquipmentSet.UseEquipmentSet(setId)
@@ -156,20 +159,20 @@ local function equipSetByName(setName)
     local setId, result = getSetIdByName(setName)
     if setId == nil then
         local errMsg = string.format("Id corresponding to %s Not found!\n", setName)
-        result = equipdbg:setResult(errMsg, equipdbg:simpleStackTrace())
+        result = dbg:setResult(errMsg, dbg:simpleStackTrace())
         return result
     end
 
     local wasEquipped = C_EquipmentSet.UseEquipmentSet(setId)
     if not wasEquipped then
         local errMsg = string.format("%s could not be equipped.", setName)
-        result = equipdbg:setResult(errMsg, equipdbg:simpleStackTrace())
+        result = dbg:setResult(errMsg, dbg:simpleStackTrace())
         return result
     end
     return result
 end
 
-function equip:setRestXpSet(inputXPsetName) -- Set only via the options menu
+function auto:setRestXpSet(inputXPsetName) -- Set only via the options menu
     local result = {SUCCESS, EMPTY_STR, EMPTY_STR}
 
     local restingSetId, result = getSetIdByName(inputXPsetName)
@@ -185,7 +188,7 @@ function equip:setRestXpSet(inputXPsetName) -- Set only via the options menu
         if not setIsEquipped(autoEquip_SavedRestingSetId) then
             local status = C_EquipmentSet.UseEquipmentSet(autoEquip_SavedRestingSetId)
             if status == nil then
-                local result = equipdbg:setResult("Failed to equip specified set.", debugstack(2))
+                local result = dbg:setResult("Failed to equip specified set.", debugstack(2))
                 return result
             end
         end
@@ -217,7 +220,7 @@ function(self, event, ...)
             if not setIsEquipped(autoEquip_SavedRestingSetId) then
                 local status = C_EquipmentSet.UseEquipmentSet(autoEquip_SavedRestingSetId)
                 if status == nil then
-                    local result = equipdbg:setResult("Failed to equip specified set.", debugstack(2))
+                    local result = dbg:setResult("Failed to equip specified set.", debugstack(2))
                     return result
                 end
             end
@@ -226,7 +229,7 @@ function(self, event, ...)
             -- Player has left the resting zone. Equip the saved set
             setWasEquipped = C_EquipmentSet.UseEquipmentSet(autoEquip_SavedPriorSetId)
             if not setWasEquipped then
-                local result = equipdbg:setResult("Failed to equip specified set.", debugstack(2))
+                local result = dbg:setResult("Failed to equip specified set.", debugstack(2))
                 return result
             end
             msg = string.format("LEFT Rest area: switched to %s.", savedSetName)
@@ -238,26 +241,26 @@ function(self, event, ...)
     if event == "ADDON_LOADED" and arg[1] == "AutoEquip" then
         initializeSavedVariables()
         -- Unregister the event after initializing
-        DEFAULT_CHAT_FRAME:AddMessage("AutoEquip Loaded", 1.0, 1.0, 0.0)
+        DEFAULT_CHAT_FRAME:AddMessage(L["ADDON_AND_VERSION"], 1.0, 1.0, 0.0)
         eventFrame:UnregisterEvent("ADDON_LOADED")
         return
     end 
 end)
 
 -- ================ SLASH COMMANDS/TESTS ================
-function equip:enumSets()
+function auto:enumSets()
     local sets = enumSetNames()
     for i = 1, #sets do
         auto:postMsg(string.format("%s\n", sets[1]))
     end
 end
 
-function equip:getEquippedSet()
+function auto:getEquippedSet()
     local setName, setId, isEquipped = getEquippedSet()
     return setName, setId, isEquipped
 end
 
-function equip:set(setName)
+function auto:set(setName)
     local result = equipSetByName(setName)
     result = C_EquipmentSet.UseEquipmentSet(setId)
     if not result[1] then auto:postResult(result) end

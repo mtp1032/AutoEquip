@@ -8,12 +8,9 @@ repo_url = "https://github.com/mtp1032/AutoEquip.git"
 
 # Define the list of target directories
 target_directories = [
-
-    r"C:\Program Files (x86)\World of Warcraft\_ptr_\Interface\AddOns",             # Retail ptr
-    r"C:\Program Files (x86)\World of Warcraft\_classic_\Interface\AddOns",         # Cataclysm Classic
-    r"C:\Program Files (x86)\World of Warcraft\_classic_beta_\Interface\AddOns",    # Cataclysm Classic Beta
-    r"C:\Program Files (x86)\World of Warcraft\_classic_era_\Interface\AddOns",     # Classic vanilla
-
+    r"C:\Program Files (x86)\World of Warcraft\_ptr_\Interface\AddOns",             # Retail PTR
+    r"C:\Program Files (x86)\World of Warcraft\_classic_\Interface\AddOns",         # Cataclysm classic
+    r"C:\Program Files (x86)\World of Warcraft\_classic_beta_\Interface\AddOns",    # Cataclysm classic beta
 ]
 
 def copy_directory(src, dest, ignore_dirs=None):
@@ -27,14 +24,29 @@ def copy_directory(src, dest, ignore_dirs=None):
         
         if os.path.isdir(source):
             if item not in ignore_dirs:
-                shutil.copytree(source, destination, dirs_exist_ok=True)
+                try:
+                    shutil.copytree(source, destination, dirs_exist_ok=True)
+                except Exception as e:
+                    print(f"Error copying directory {source} to {destination}: {e}")
         else:
-            shutil.copy2(source, destination)
+            try:
+                shutil.copy2(source, destination)
+            except Exception as e:
+                print(f"Error copying file {source} to {destination}: {e}")
 
-# Create a temporary directory to clone the repository
+def clone_repository(repo_url, destination):
+    """Clones the repository to the specified destination."""
+    try:
+        subprocess.run(["git", "clone", repo_url, destination], check=True)
+        print(f"Repository cloned to {destination}")
+    except subprocess.CalledProcessError as e:
+        print(f"Error cloning repository: {e}")
+        raise
+
+# Main script execution
 with tempfile.TemporaryDirectory() as temp_dir:
     # Clone the repository into the temporary directory
-    subprocess.run(["git", "clone", repo_url, temp_dir], check=True)
+    clone_repository(repo_url, temp_dir)
 
     # Loop through each target directory
     for target_dir in target_directories:
@@ -42,7 +54,11 @@ with tempfile.TemporaryDirectory() as temp_dir:
         metrics_dir = os.path.join(target_dir, "AutoEquip")
 
         # Ensure the target directory exists
-        os.makedirs(metrics_dir, exist_ok=True)
+        try:
+            os.makedirs(metrics_dir, exist_ok=True)
+        except OSError as e:
+            print(f"Error creating directory {metrics_dir}: {e}")
+            continue
 
         # Remove existing non-Git files in the AutoEquip directory
         if os.path.exists(metrics_dir):
@@ -56,6 +72,9 @@ with tempfile.TemporaryDirectory() as temp_dir:
             except PermissionError as e:
                 print(f"PermissionError: {e}")
                 print("Skipping deletion of some files due to permissions issues.")
+            except Exception as e:
+                print(f"Error cleaning directory {metrics_dir}: {e}")
+                continue
 
         # Copy the contents of the cloned repository to the AutoEquip directory,
         # excluding the .git directory
