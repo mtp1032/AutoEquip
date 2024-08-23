@@ -19,21 +19,21 @@ local SUCCESS = true
 local FAILURE = false
 
 -- Ensure the saved variables are declared and accessible
-if autoEquip_SavedRestingSetId == nil then
-    autoEquip_SavedRestingSetId = nil
+if autoEquip_Resting_SetId == nil then
+    autoEquip_Resting_SetId = nil
 end
 
-if autoEquip_SavedPriorSetId == nil then
-    autoEquip_SavedPriorSetId = nil
+if autoEquip_Saved_SetId == nil then
+    autoEquip_Saved_SetId = nil
 end
 
 -- Function to initialize saved variables
 local function initializeSavedVariables()
-    if autoEquip_SavedRestingSetId == nil then
-        autoEquip_SavedRestingSetId = nil
+    if autoEquip_Resting_SetId == nil then
+        autoEquip_Resting_SetId = nil
     end
-    if autoEquip_SavedPriorSetId == nil then
-        autoEquip_SavedPriorSetId = nil
+    if autoEquip_Saved_SetId == nil then
+        autoEquip_Saved_SetId = nil
     end
 end
 
@@ -109,7 +109,6 @@ local function getSetIdByName(setName)
 
     return setId, result
 end
-
 local function setIsEquipped(setId)
     local equipped = false
 
@@ -172,21 +171,22 @@ local function equipSetByName(setName)
     return result
 end
 
-function auto:setRestXpSet(inputXPsetName) -- Set only via the options menu
+function auto:setRestXpSet( inputXPsetName ) -- Set only via the options menu
     local result = {SUCCESS, EMPTY_STR, EMPTY_STR}
 
-    local restingSetId, result = getSetIdByName(inputXPsetName)
+    local restingSetId, result = getSetIdByName( inputXPsetName )
     if not result[1] then return result end
+    local _, savedSetId = getEquippedSet()
+    dbg:Print( "Resting Set:", restingSetId, "Saved Set:", savedSetId )
 
-    local _, currentSetId = getEquippedSet()
-    autoEquip_SavedRestingSetId = restingSetId
-    autoEquip_SavedPriorSetId = currentSetId
+    autoEquip_Resting_SetId = restingSetId
+    autoEquip_Saved_SetId   = savedSetId
 
     -- If player is already in a resting zone and his resting set is not equipped,
-    -- then equip the rest XP set.
+    -- then equip the resting set.
     if IsResting() then 
-        if not setIsEquipped(autoEquip_SavedRestingSetId) then
-            local status = C_EquipmentSet.UseEquipmentSet(autoEquip_SavedRestingSetId)
+        if not setIsEquipped( autoEquip_Resting_SetId ) then
+            local status = C_EquipmentSet.UseEquipmentSet(autoEquip_Resting_SetId )
             if status == nil then
                 local result = dbg:setResult("Failed to equip specified set.", debugstack(2))
                 return result
@@ -210,15 +210,19 @@ function(self, event, ...)
         -- PLAYER_UPDATE_RESTING is fired when the player enters or leaves a resting area
 
         local msg = nil
-        local restingSetName = getSetNameByID(autoEquip_SavedRestingSetId)
-        local savedSetName = getSetNameByID(autoEquip_SavedPriorSetId)
+        local restingSetName = getSetNameByID( autoEquip_Resting_SetId )
+        local restingSetId = getSetIdByName( restingSetName )
+        local savedSetName = getSetNameByID( autoEquip_Saved_SetId )
+        local savedSetId = getSetIdByName( savedSetName )
+
         local setWasEquipped = nil
 
         if IsResting() then
             -- Player has entered a resting area. If the player is not wearing
             -- his resting set, then equip it. If he is, do nothing.
-            if not setIsEquipped(autoEquip_SavedRestingSetId) then
-                local status = C_EquipmentSet.UseEquipmentSet(autoEquip_SavedRestingSetId)
+            
+            if not setIsEquipped( restingSetId ) then
+                local status = C_EquipmentSet.UseEquipmentSet( restingSetId )
                 if status == nil then
                     local result = dbg:setResult("Failed to equip specified set.", debugstack(2))
                     return result
@@ -227,7 +231,7 @@ function(self, event, ...)
             msg = string.format("ENTERED Rest Area: switched to %s (Id = %d).", restingSetName)
         else
             -- Player has left the resting zone. Equip the saved set
-            setWasEquipped = C_EquipmentSet.UseEquipmentSet(autoEquip_SavedPriorSetId)
+            setWasEquipped = C_EquipmentSet.UseEquipmentSet( autoEquip_Saved_SetId )
             if not setWasEquipped then
                 local result = dbg:setResult("Failed to equip specified set.", debugstack(2))
                 return result
@@ -258,10 +262,4 @@ end
 function auto:getEquippedSet()
     local setName, setId, isEquipped = getEquippedSet()
     return setName, setId, isEquipped
-end
-
-function auto:set(setName)
-    local result = equipSetByName(setName)
-    result = C_EquipmentSet.UseEquipmentSet(setId)
-    if not result[1] then auto:postResult(result) end
 end
