@@ -13,10 +13,9 @@ AutoEquip.AutoEquip = {}
 local auto = AutoEquip.AutoEquip
 
 local L = AutoEquip.Locales
-local dbg = AutoEquip.Debug	-- use for error reporting services
+local dbg       = AutoEquip.Debug	-- use for error reporting services
 local EMPTY_STR = ""
-local SUCCESS = true
-local FAILURE = false
+local SUCCESS   = true
 
 -- Ensure the saved variables are declared and accessible
 if autoEquip_Resting_SetId == nil then
