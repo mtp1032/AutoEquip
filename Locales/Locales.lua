@@ -32,8 +32,13 @@ local function getExpansionName( )
     return expansionNames[expansionLevel] -- Directly return the mapped name
 end
 
-local ADDON_VERSION 	= C_AddOns.GetAddOnMetadata( ADDON_NAME, "Version")
-local EXPANSION_NAME = getExpansionName()
+-- Form a string representing the library's version number (see WoWThreads.lua).
+local MAJOR = C_AddOns.GetAddOnMetadata(ADDON_NAME, "X-MAJOR")
+local MINOR = C_AddOns.GetAddOnMetadata(ADDON_NAME, "X-MINOR")
+local PATCH = C_AddOns.GetAddOnMetadata(ADDON_NAME, "X-PATCH")
+
+local version = string.format("%s.%s.%s", MAJOR, MINOR, PATCH )
+local expansionName = getExpansionName()
 
 local L = setmetatable({}, { __index = function(t, k)
 	local v = tostring(k)
@@ -48,8 +53,8 @@ local LOCALE = GetLocale()      -- BLIZZ
 if LOCALE == "enUS" then
 
 	L["ADDON_NAME"]			= ADDON_NAME
-	L["VERSION"]			= ADDON_VERSION
-	L["EXPANSION_NAME"]		= EXPANSION_NAME 
+	L["VERSION"]			= version
+	L["EXPANSION_NAME"]		= expansionName 
 
 	L["ADDON_AND_VERSION"] 	= string.format("%s v%s (%s)", L["ADDON_NAME"], L["VERSION"], L["EXPANSION_NAME"] )
 
