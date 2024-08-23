@@ -1,0 +1,12 @@
+[
+  {
+    "name": "clone_autoequip_repo.py",
+    "path": "Testing/clone_autoequip_repo.py",
+    "content": {
+      "structured": {
+        "description": "Two main functionalities: cloning a GitHub repository and copying its contents to specified directories while ignoring certain subdirectories. It uses Git's clone command through the subprocess package to download the repository from a given URL and then utilizes shutil for directory operations, such as copying and removing files. The script also handles errors and exceptions during these processes.",
+        "items": []
+      }
+    }
+  }
+]

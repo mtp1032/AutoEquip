@@ -1,0 +1,15 @@
+{
+  "meta": {
+    "version": "1",
+    "updated_at": "2024-08-23T03:17:37.933Z",
+    "created_at": "2024-08-23T03:17:39.667Z",
+    "pipelines": [
+      "2c37a258-f4af-4b71-93ff-165c23d4e730"
+    ]
+  },
+  "lookup": [
+    [
+      "Testing/clone_autoequip_repo.py"
+    ]
+  ]
+}
