@@ -27,33 +27,36 @@ function dbg:simpleStackTrace( stackTrace )
 	local simple = string.format("%s]%d", dir, pieces[2])
 	return simple
 end
-function dbg:prefix( stackTrace )
-	if stackTrace == nil then stackTrace = debugstack(2) end
-	-- print( stackTrace )
+function dbg:Prefix(stackTrace)
+    stackTrace = stackTrace or debugstack(2)
+    
+    -- Extract the relevant part of the stack trace (filename and line number)
+    local fileName, lineNumber = stackTrace:match("[\\/]([^\\/:]+):(%d+)")
+    if not fileName or not lineNumber then
+        return "[Unknown:0] "
+    end
 
-	local pieces = {strsplit( ":", stackTrace, 5 )}
-	local segments = {strsplit( "\\", pieces[1], 5 )}
+    -- Remove any trailing unwanted characters (e.g., `"]`, `*]`, `"`) from the filename
+    fileName = fileName:gsub("[%]*\"]", "")
 
-	local fileName = segments[#segments]
-	
-	local strLen = string.len( fileName )
-	local fileName = string.sub( fileName, 1, strLen - 2 )
-	local names = strsplittable( "\/", fileName )
-	local lineNumber = tonumber(pieces[2])
-	local location = string.format("[%s:%d] ", names[#names], lineNumber)
-	return location
+    -- Create the prefix with file name and line number, correctly formatted
+    local prefix = string.format("[%s:%d] ", fileName, tonumber(lineNumber))
+    return prefix
 end
-function dbg:print( msg )
-	local fileAndLine = dbg:prefix( debugstack(2) )
-	-- print(fileAndLine .. " " .. msg)
-	local str = msg
-	if str then
-		str = string.format("%s %s", fileAndLine, str )
-	else
-		str = fileAndLine
-	end
-	DEFAULT_CHAT_FRAME:AddMessage( str, 0.0, 1.0, 1.0 )
-end	
+function dbg:Print(...)
+    local prefix = dbg:Prefix(debugstack(2))
+
+    -- Convert all arguments to strings and concatenate them with a space delimiter
+    local args = {...}
+    for i, v in ipairs(args) do
+        args[i] = tostring(v)
+    end
+
+    local output = prefix .. table.concat(args, " ")
+
+    -- Directly call the global print function
+    print(output)
+end
 function dbg:setResult( errMsg, stackTrace )
 	local result = {FAILURE, EMPTY_STR, EMPTY_STR }
 	return 	{ FAILURE, errMsg, stackTrace }
