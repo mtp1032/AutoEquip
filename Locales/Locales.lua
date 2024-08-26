@@ -74,8 +74,25 @@ if LOCALE == "enUS" then
 	L["LINE3"] 			= "a rest area (e.g, an Inn or a city). The set the character was wearing"
 	L["LINE4"]			= "when entering the rest area will be restored when the character leaves."
 
-	L["PARAM_NIL"]				= "Invalid Parameter - Was nil."
-	L["ARMOR_SET_NOT_FOUND"]	= "Armor set, %s, not found. Check spelling.\n"
-	L["AVAILABLE_SETS"]			= "Available sets: "
+	L["EQUIPMENT_SET_NOT_FOUND"]	= "ERROR: Equipment set, %s, not found. Check spelling.\n"
+	L["LEVEL_REQUIREMENT"]			= "ERROR: %s must be level 10 or above to use the equipment manager."
+	L["INVALID_EQUIPMENT_SET"] 		= string.format( "ERROR: No usable equipment sets are available. This error often arises\n because an equipment set is missing one or more items.")
+	L["EQUIPMENT_SETS_NOT_DEFINED"] = "ERROR: %s has not yet defined any equipment sets."
+	L["LEFT_REST_AREA"]				= "INFO: LEFT Rest area. Equipped %s. "
+	L["ENTERED_REST_AREA"] 			= "INFO: Entered Rest Aread. Equipped %s. "
+	L["EQUIP_SET_FAILED"] 			= "ERROR: %s not equipped. "
 
 end
+--[[ 
+-- Localization table (typically loaded from a separate file based on the locale)
+local L = {}
+L["SET_NOT_EQUIPPED"] = "ERROR: Failed to equip set %s"
+
+-- Example of using the localization entry with a dynamic value
+local combatSet = "MyCombatSet"
+local errorMessage = string.format(L["SET_NOT_EQUIPPED"], combatSet)
+
+-- Print the result or display it to the player
+print(errorMessage)  -- Outputs: "ERROR: Failed to equip set MyCombatSet"
+
+]]
