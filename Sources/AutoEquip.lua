@@ -41,13 +41,13 @@ function auto:setsAreAvailable()
     local reason = nil
 
     if UnitLevel("Player") < 10 then
-        reason = string.format("ERROR: %s must be level 10 or above to use the equipment manager.", UnitName("Player"))
+        reason = string.format( L["LEVEL_REQUIREMENT"], UnitName("Player"))
         isValid = false
         return isValid, reason
     end
     -- check whether one or more equipment sets are useable
     if not C_EquipmentSet.CanUseEquipmentSets() then
-        reason = string.format("ERROR: No usable equipment sets are available. This error often arises\n because an equipment set is missing one or more items.")
+        reason = L["INVALID_EQUIPMENT_SET"]
         isValid = false
         return isValid, reason
     end
@@ -55,7 +55,7 @@ function auto:setsAreAvailable()
     local setIDs = C_EquipmentSet.GetEquipmentSetIDs()
 
     if setIDs == nil or #setIDs == 0 then
-        reason = string.format("ERROR: %s has not yet defined any equipment sets.", UnitName("Player"))
+        reason = string.formati( L["EQUIPMENT_SETS_NOT_DEFINED"], UnitName("Player "))
         isValid = false
         return isValid, reason
     end
@@ -85,7 +85,8 @@ local function getSetNameByID(setId)
         end
     end
     if setName == nil then
-        result = dbg:setResult(string.format("Equipment set %d not found", setId), debugstack(2))
+        local errStr = string.format( L["EQUIPMENT_SET_NOT_FOUND"], tostring( setId))
+        result = dbg:setResult( errStr, dbg:simpleStackTrace() )
     end
 
     return setName, result
@@ -103,7 +104,8 @@ local function getSetIdByName(setName)
         end
     end
     if setId == nil then
-        result = dbg:setResult(string.format("%s equipment set not found", setName), debugstack(2))
+        local errStr = string.format( L["EQUIPMENT_SET_NOT_FOUND"], setName )
+        result = dbg:setResult( errStr, dbg:simpleStackTrace() )
     end
 
     return setId, result
@@ -138,14 +140,15 @@ end
 local function equipSetByID(setId)
     local result = { SUCCESS, EMPTY_STR, EMPTY_STR }
     if setId == nil then
-        result = dbg:setResult(errMsg, dbg:simpleStackTrace())
+        local errStr = string.format( L[""])
+        result = dbg:setResult(errStr, dbg:simpleStackTrace() )
         return result
     end
     
     local setName = getSetNameByID(setId)
     if setName == nil then
-        local errMsg = string.format("%d Not found. Set Could not be equipped!\n", setId)
-        result = dbg:setResult(errMsg, dbg:simpleStackTrace())
+        local errStr = string.format( L["EQUIPMENT_SET_NOT_FOUND"], tostring( setId ) )
+        result = dbg:setResult( errStr, dbg:simpleStackTrace() ) 
         return result
     end
     C_EquipmentSet.UseEquipmentSet(setId)
@@ -156,14 +159,14 @@ local function equipSetByName(setName)
     local result = { SUCCESS, EMPTY_STR, EMPTY_STR }
     local setId, result = getSetIdByName(setName)
     if setId == nil then
-        local errMsg = string.format("Id corresponding to %s Not found!\n", setName)
-        result = dbg:setResult(errMsg, dbg:simpleStackTrace())
+        local errStr = string.format( L["EQUIPMENT_SET_NOT_FOUND"], setName )
+        result = dbg:setResult( errStr, dbg:simpleStackTrace() )
         return result
     end
 
     local wasEquipped = C_EquipmentSet.UseEquipmentSet(setId)
     if not wasEquipped then
-        local errMsg = string.format("%s could not be equipped.", setName)
+        local errMsg = string.format(L["EQUIP_SET_FAILED"], setName )
         result = dbg:setResult(errMsg, dbg:simpleStackTrace())
         return result
     end
@@ -176,7 +179,6 @@ function auto:setRestXpSet( inputXPsetName ) -- Set only via the options menu
     local restingSetId, result = getSetIdByName( inputXPsetName )
     if not result[1] then return result end
     local _, savedSetId = getEquippedSet()
-    dbg:Print( "Resting Set:", restingSetId, "Saved Set:", savedSetId )
 
     autoEquip_Resting_SetId = restingSetId
     autoEquip_Saved_SetId   = savedSetId
@@ -187,7 +189,8 @@ function auto:setRestXpSet( inputXPsetName ) -- Set only via the options menu
         if not setIsEquipped( autoEquip_Resting_SetId ) then
             local status = C_EquipmentSet.UseEquipmentSet(autoEquip_Resting_SetId )
             if status == nil then
-                local result = dbg:setResult("Failed to equip specified set.", debugstack(2))
+                local errStr = string.format(L["EQUIP_SET_FAILED"], inputXPsetName)
+                local result = dbg:setResult( errStr, dbg:simpleStackTrace() )
                 return result
             end
         end
@@ -223,19 +226,23 @@ function(self, event, ...)
             if not setIsEquipped( restingSetId ) then
                 local status = C_EquipmentSet.UseEquipmentSet( restingSetId )
                 if status == nil then
-                    local result = dbg:setResult("Failed to equip specified set.", debugstack(2))
+                    local errStr = string.format(L["EQUIP_SET_FAILED"], restingSetName )
+                    local result = dbg:setResult( errStr,  dbg:simpleStackTrace() )
                     return result
                 end
             end
-            msg = string.format("ENTERED Rest Area: switched to %s (Id = %d).", restingSetName)
+            local setName = getSetNameByID()
+            msg = string.format( L["LEFT_REST_AREA"], restingSetName)
         else
             -- Player has left the resting zone. Equip the saved set
             setWasEquipped = C_EquipmentSet.UseEquipmentSet( autoEquip_Saved_SetId )
             if not setWasEquipped then
-                local result = dbg:setResult("Failed to equip specified set.", debugstack(2))
+                local setName = getSetNameByID( autoEquip_Saved_SetId )
+                local errStr = string.format(L["EQUIP_SET_FAILED"], setName )
+                local result = dbg:setResult(L["EQUIP_SET_FAILED"], dbg:simpleStackTrace())
                 return result
             end
-            msg = string.format("LEFT Rest area: switched to %s.", savedSetName)
+            msg = string.format( L["LEFT_REST_AREA"], savedSetName )
         end
         UIErrorsFrame:AddMessage(msg, 0.0, 1.0, 0.0)
         DEFAULT_CHAT_FRAME:AddMessage(msg, 0.0, 1.0, 0.0)
