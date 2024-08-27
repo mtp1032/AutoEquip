@@ -31,7 +31,7 @@ local function OnMinimapClick(self, button)
     if button == "LeftButton" and not IsShiftKeyDown() then
         local anyAvailable, reason = auto:setsAreAvailable()
         if not anyAvailable then 
-            msgFrame:postErrorMsg(reason)
+            dbg:Print(reason)
             -- menu:hide()
         else
             menu:show()
