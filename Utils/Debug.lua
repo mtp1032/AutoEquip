@@ -17,6 +17,37 @@ local FAILURE	= false
 ---------------------------------------------------------------------------------------------------
 --                      PUBLIC/EXPORTED FUNCTIONS
 ----------------------------------------------------------------------------------------------------
+-- Create a frame for displaying combat notifications
+local notificationFrame = CreateFrame("Frame", "notificationFrame", UIParent)
+notificationFrame:SetSize(300, 50)  -- Width, Height
+notificationFrame:SetPoint("CENTER", 0, GetScreenHeight() * 0.375)  -- Positioning at X=0 and 3/4 from the bottom to the top
+notificationFrame:Hide()  -- Initially hide the frame
+
+-- Create the text inside the frame
+local notificationText = notificationFrame:CreateFontString(nil, "OVERLAY")
+notificationText:SetFont("Fonts\\FRIZQT__.TTF", 24, "OUTLINE")  -- Set the font, size, and outline
+notificationText:SetPoint("CENTER", notificationFrame, "CENTER")  -- Center the text within the frame
+notificationText:SetTextColor(0.0, 1.0, 0.0)  -- Red color for the text
+notificationText:SetShadowOffset(1, -1)  -- Black shadow to match Blizzard's combat text
+
+-- Function to display the notification
+function dbg:notifyEquipmentChange(message, duration)
+    notificationText:SetText(message)
+    notificationFrame:Show()
+
+    -- Set up a fade-out effect
+    -- duration, example, 5 seconds
+    -- Ending Alpha. 0 is the visibility.
+    UIFrameFadeOut( notificationFrame, duration, 1, 0)
+    
+    -- Hide the frame after the fade is complete
+    C_Timer.After( duration, function()
+        notificationFrame:Hide()
+    end)
+end
+
+
+
 function dbg:simpleStackTrace( stackTrace )
 	if stackTrace == nil then stackTrace = debugstack(2) end
 
@@ -57,9 +88,7 @@ function dbg:Print(...)
     -- Directly call the global print function
     print(output)
 end
-function dbg:setResult( errMsg, stackTrace )
-	local result = {FAILURE, EMPTY_STR, EMPTY_STR }
-	return 	{ FAILURE, errMsg, stackTrace }
-
+function dbg:setResult( reason, stackTrace )
+	return 	{ FAILURE, reason, stackTrace }
 end
 
