@@ -72,7 +72,7 @@ local function createArmorSetIcon(f, setName, iconFileId, i)
 		local equipSetName = btn.Name:GetText()
 		local result = auto:setRestXpSet(equipSetName)
 		if not result[1] then
-			auto:postResult(result)
+			dbg:Print( result[2])
 			return
 		end
 		optionsPanel:Hide()
@@ -145,7 +145,7 @@ local function createOptionsPanel()
 			iconFileID = iconFileId
 		else
 			iconFileID = 134400
-			auto:postMsg(string.format("The %s set is missing one or more items\n", setName))
+			dbg:Print(string.format( L["EQUIPSET_MISSING_ITEMS"], setName))
 			armorSetIcon = createArmorSetIcon(frame, setName, iconFileID, i)
 			armorSetIcon.IsComplete = false
 		end
@@ -157,11 +157,9 @@ local function createOptionsPanel()
 	local messageText = frame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 	messageText:SetJustifyH("LEFT")
 	messageText:SetPoint("TOP", 0, -50)
-	messageText:SetText("AutoEquip is used to automatically and transparently equip\n" ..
-		"a specific armor set when entering a rest area. Usually\n" ..
-		"this means an armor set containing one or more Heirloom\n" ..
-		"items.\n")
-
+	local optionsText = L["OPTIONS_TEXT_LINE1"] .. L["OPTIONS_TEXT_LINE2"] .. L["OPTIONS_TEXT_LINE3"]
+	messageText:SetText( optionsText )
+	
 	drawLine(0, frame)
 
 	frame:Show()
@@ -172,11 +170,13 @@ function menu:show()
 	if optionsPanel == nil then
 		optionsPanel = createOptionsPanel()
 	end
-	local equippedSetName, _, _ = auto:getEquippedSet()
+	local _, equippedSetName = auto:getEquippedSet()
 	if equippedSetName == nil then
-		equippedSetName = "No Equipment Set Specified."
+		equippedSetName = string.format(L["EQUIPMENT_SET_NOT_FOUND"], "N/A")
 	end
-	optionsPanel.equippedSetStr:SetText(string.format("Currently Equipped: %s\n", equippedSetName))
+
+	optionsPanel.equippedSetStr:SetText(string.format(L["CURRENT_EQUIPPED_SET"], equippedSetName ))
+
 	optionsPanel:Show()
 
 	local point, relativeTo, relativePoint, xOfs, yOfs = optionsPanel:GetPoint()
