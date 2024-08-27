@@ -1,9 +1,9 @@
 ## Interface: 11502, 11503, 20504, 30403, 40400, 100207, 110000, 110002
 ## -----------------------------------------------------------------------
 ## Title: AutoEquip
-## Version: 0.8.1
+## Version: 0.0.1
 ## X-MAJOR: 0
-## X-MINOR: 8
+## X-MINOR: 0
 ## X-PATCH: 1
 ## Notes: Automatically equips a Rested XP Armor Set
 ## SavedVariablesPerCharacter: autoEquip_Resting_SetId, autoEquip_Saved_SetId, AutoEquip_DB
