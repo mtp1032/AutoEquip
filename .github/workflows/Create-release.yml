@@ -39,7 +39,7 @@ jobs:
           cp -r Utils package/Utils
           cp LICENSE package/AutoEquip/
           cp README.md package/AutoEquip/
-          cp VERSION.md package/AutoEquip/
+          cp VERSION package/AutoEquip/
           cp AutoEquip.toc package/AutoEquip/
           cd package
           zip -r ../AutoEquip.zip AutoEquip
