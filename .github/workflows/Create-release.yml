@@ -36,7 +36,7 @@ jobs:
           cp -r LibACE package/AutoEquip/
           cp -r Locales package/AutoEquip/
           cp -r Sources package/AutoEquip/
-          cp -r Utils package/AutoEquip/
+          cp -r Utils package/Utils
           cp LICENSE package/AutoEquip/
           cp README.md package/AutoEquip/
           cp VERSION.md package/AutoEquip/
@@ -44,11 +44,9 @@ jobs:
           cd package
           zip -r ../AutoEquip.zip AutoEquip
 
-      - name: Authenticate GitHub CLI
-        run: |
-          echo "${{ secrets.PERSONAL_ACCESS_TOKEN }}" | gh auth login --with-token
-
       - name: Create Release
+        env:
+          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}  # Use PERSONAL_ACCESS_TOKEN
         run: |
           tag_name="v${{ env.VERSION }}"
           release_name="AutoEquip Release $tag_name"
