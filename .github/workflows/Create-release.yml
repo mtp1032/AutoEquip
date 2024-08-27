@@ -24,8 +24,8 @@ jobs:
             echo "VERSION.md file not found!"
             exit 1
           fi
-          VERSION.md=$(jq -r '.version' VERSION.md)
-          echo "VERSION.md=$VERSION" >> $GITHUB_ENV
+          VERSION=$(jq -r '.version' VERSION.md)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Clean up previous builds
         run: rm -rf AutoEquip.zip package
@@ -36,7 +36,7 @@ jobs:
           cp -r LibACE package/AutoEquip/
           cp -r Locales package/AutoEquip/
           cp -r Sources package/AutoEquip/
-          cp -r Utils package/AutoEquip/
+          cp -r Utils package/Utils
           cp LICENSE package/AutoEquip/
           cp README.md package/AutoEquip/
           cp VERSION.md package/AutoEquip/
