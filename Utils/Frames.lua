@@ -9,9 +9,6 @@ AutoEquip = AutoEquip or {}
 AutoEquip.Frames = {}
 local frames = AutoEquip.Frames
 
-local L = AutoEquip.Locales
-local dbg = AutoEquip.Debug
-
 -- https://us.forums.blizzard.com/en/wow/t/addons-now-usable-in-shadowlands-beta/586355/16
 -- https://wow.gamepedia.com/API_Frame_SetBackdrop
 -- https://wow.gamepedia.com/EdgeFiles
