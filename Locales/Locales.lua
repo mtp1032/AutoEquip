@@ -67,20 +67,28 @@ if LOCALE == "enUS" then
 	-- bod Specific
 	L["LEFTCLICK_FOR_OPTIONS_MENU"]			= string.format( "Left click to display the %s Options Menu.", L["ADDON_NAME"] )
 
-	L["DSCR_SUBHEADER"] = "Auto Save & Restore Your Equipment Sets"
+	L["DESCR_SUBHEADER"] = "Auto Save & Restore Your Equipment Sets"
 
 	L["LINE1"]			= string.format("%s is intended to automatically equip an armor set", L["ADDON_NAME"])
-	L["LINE2"] 			= "containing one or more Heirloom items whenever the character enters"
+	L["LINE2"] 			= "[usually] containing one or more Heirloom items whenever the character enters"
 	L["LINE3"] 			= "a rest area (e.g, an Inn or a city). The set the character was wearing"
 	L["LINE4"]			= "when entering the rest area will be restored when the character leaves."
 
-	L["EQUIPMENT_SET_NOT_FOUND"]	= "ERROR: Equipment set, %s, not found. Check spelling.\n"
+	L["OPTIONS_TEXT_LINE1"] = string.format("AutoEquip is used to automatically and transparently equip\n")
+	L["OPTIONS_TEXT_LINE2"] = string.format("a specific armor set when entering a rest area. Usually\n" )
+	L["OPTIONS_TEXT_LINE3"]	= string.format("this means an armor set containing one or more Heirloom items.\n")
+	
+
+	L["EQUIPMENT_SET_NOT_FOUND"]	= "ERROR: Equipment set not found. Check spelling.\n"
+	L["EQUIPSET_MISSING_ITEMS"] 	= "ERROR: The %s set is missing one or more items.\n"
+	L["NO_SETS_EXIST"]				= "ERROR: No equipment sets exist yet. "
 	L["LEVEL_REQUIREMENT"]			= "ERROR: %s must be level 10 or above to use the equipment manager."
-	L["INVALID_EQUIPMENT_SET"] 		= string.format( "ERROR: No usable equipment sets are available. This error often arises\n because an equipment set is missing one or more items.")
+	L["EQUIPMENT_SETS_UNAVAILABLE"] = string.format( "ERROR: No usable equipment sets are available. This error often arises\n because an equipment set is missing one or more items.")
 	L["EQUIPMENT_SETS_NOT_DEFINED"] = "ERROR: %s has not yet defined any equipment sets."
-	L["LEFT_REST_AREA"]				= "INFO: LEFT Rest area. Equipped %s. "
-	L["ENTERED_REST_AREA"] 			= "INFO: Entered Rest Aread. Equipped %s. "
-	L["EQUIP_SET_FAILED"] 			= "ERROR: %s not equipped. "
+	L["LEFT_REST_AREA"]				= "INFO: LEFT Rest area. Equipped %s equipment set. "
+	L["ENTERED_REST_AREA"] 			= "INFO: Entered Rest Area. Equipped %s equipment set. "
+	L["FAILED_TO_EQUIP_SET"] 		= "ERROR: %s set was not equipped. "
+	L["CURRENT_EQUIPPED_SET"]		= "Currently Equipped: %s\n"
 
 end
 --[[ 
