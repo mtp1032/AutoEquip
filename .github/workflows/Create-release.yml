@@ -36,7 +36,7 @@ jobs:
           cp -r LibACE package/AutoEquip/
           cp -r Locales package/AutoEquip/
           cp -r Sources package/AutoEquip/
-          cp -r Utils package/Utils
+          cp -r Utils package/AutoEquip/
           cp LICENSE package/AutoEquip/
           cp README.md package/AutoEquip/
           cp VERSION package/AutoEquip/
