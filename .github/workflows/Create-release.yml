@@ -44,11 +44,9 @@ jobs:
           cd package
           zip -r ../AutoEquip.zip AutoEquip
 
-      - name: Authenticate GitHub CLI
-        run: |
-          echo "${{ secrets.PERSONAL_ACCESS_TOKEN }}" | gh auth login --with-token
-
       - name: Create Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
           tag_name="v${{ env.VERSION }}"
           release_name="AutoEquip Release $tag_name"
