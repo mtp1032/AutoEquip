@@ -1,0 +1,39 @@
+name: Create Release and Upload Asset
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install jq
+        run: sudo apt-get install jq -y
+
+      - name: Retrieve version
+        id: get_version
+        run: |
+          if [ ! -f VERSION.md ]; then
+            echo "VERSION.md file not found!"
+            exit 1
+          fi
+          VERSION=$(jq -r '.version' VERSION.md)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Clean up previous builds
+        run: rm -rf AutoEquip.zip package
+
+      - name: Package files
+        run: |
+          mkdir -p package/AutoEquip
+          cp -r LibACE package/AutoEquip/
+          cp -r Locales package/AutoEquip/
+          cp -r Sources package/AutoEquip/
+          cp -r Utils package/Auto
