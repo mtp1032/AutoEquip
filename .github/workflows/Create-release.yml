@@ -46,7 +46,7 @@ jobs:
 
       - name: Create Release
         env:
-          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}  # Use PERSONAL_ACCESS_TOKEN
+          GH_TOKEN: ${{ github.token }}
         run: |
           tag_name="v${{ env.VERSION }}"
           release_name="AutoEquip Release $tag_name"
