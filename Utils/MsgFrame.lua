@@ -7,52 +7,38 @@ local ADDON_NAME, AutoEquip = ...
 
 AutoEquip = AutoEquip or {}
 AutoEquip.MsgFrame = {}
-local msgFrame = AutoEquip.MsgFrame
-local frames = AutoEquip.Frames
 
 local L = AutoEquip.Locales
-local dbg = AutoEquip.Debug
+local mf = AutoEquip.MsgFrame
+local frames = AutoEquip.Frames
 
 local FAILURE = false
 
 local frameTitle = L["USER_MSG_FRAME"]
-local msgFrame = frames:createMsgFrame( frameTitle)
+local infoMsgFrame = frames:createMsgFrame( frameTitle)
 
 local frameTitle = string.format("ERROR: AutoEquip (V 1.0.0)" )
 local errorMsgFrame = frames:createErrorMsgFrame(frameTitle)
 
-function msgFrame:getMsgFrame()
-	return msgFrame
+function mf:getInfoMsgFrame()
+	return infoMsgFrame
 end
-function msgFrame:showFrame()
-	frames:showFrame( msgFrame )
+function mf:showInfoFrame()
+	frames:showFrame( infoMsgFrame )
 end
-function msgFrame:eraseText()  
-	frames:clearFrame( msgFrame )
+function mf:eraseText()  
+	frames:clearFrame( infoMsgFrame )
 end
-function msgFrame:hideFrame()
-	frames:hideFrame( msgFrame )
+function mf:hideInfoFrame()
+	frames:hideFrame( infoMsgFrame )
 end
-function msgFrame:hideMeter()
-	frames:hideMeter( msgFrame )
+function mf:hideMeter()
+	frames:hideMeter( infoMsgFrame )
 end
-function msgFrame:showMeter()
-    if errorMsgFrame == nil then 
-        return
-	end
-	if errorMsgFrame:IsVisible() == false then
-		errorMsgFrame:Show()
-	end
+function mf:postMsg( msg )
+	infoMsgFrame.Text:Insert( msg )
 end
-function msgFrame:postMsg( msg )
-	frames:showFrame( msgFrame )
-	frames.Text:Insert( msg )
-end
-function msgFrame:postErrorMsg( msg )
-	frames:showFrame( errorMsgFrame )
-	errorMsgFrame.Text:Insert( msg )
-end
-function msgFrame:postResult( result )
+function mf:postResult( result )
 
 	if result[1] ~= FAILURE then return end
 	
@@ -60,7 +46,7 @@ function msgFrame:postResult( result )
 	errorMsgFrame.Text:Insert( resultString )
 	errorMsgFrame:Show()
 end
-function msgFrame:clearText()
+function mf:clearText()
 	frames:clearFrameText()
 end
 
