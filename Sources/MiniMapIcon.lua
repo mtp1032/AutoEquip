@@ -12,6 +12,7 @@ local addonIcon = AutoEquip.MiniMapIcon -- unused for now
 local auto = AutoEquip.AutoEquip
 local L = AutoEquip.Locales
 local dbg = AutoEquip.Debug
+local mf = AutoEquip.MsgFrame
 local menu = AutoEquip.OptionsMenu  -- Ensure menu is properly referenced
 local msgFrame = AutoEquip.MsgFrame
 
@@ -31,7 +32,7 @@ local function OnMinimapClick(self, button)
     if button == "LeftButton" and not IsShiftKeyDown() then
         local anyAvailable, reason = auto:setsAreAvailable()
         if not anyAvailable then 
-            dbg:Print(reason)
+            mf:postMsg(reason)
             -- menu:hide()
         else
             menu:show()
@@ -63,3 +64,8 @@ function addon:OnInitialize()
         { profile = { minimap = { hide = false, }, }, }) 
     icon:Register(ADDON_NAME, AutoEquip_DB, self.db.profile.minimap)
 end
+local fileName = "MiniMapIcon.lua"
+if dbg:debuggingIsEnabled() then
+    DEFAULT_CHAT_FRAME:AddMessage( string.format("%s loaded.", fileName ), 1,1,1 )
+end
+
