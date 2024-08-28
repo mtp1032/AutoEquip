@@ -30,13 +30,12 @@ local addon = LibStub("AceAddon-3.0"):NewAddon(ADDON_NAME, "AceConsole-3.0")
 -- Create the click handler for the minimap icon
 local function OnMinimapClick(self, button)
     if button == "LeftButton" and not IsShiftKeyDown() then
-        local anyAvailable, reason = auto:setsAreAvailable()
-        if not anyAvailable then 
-            mf:postMsg(reason)
-            -- menu:hide()
-        else
-            menu:show()
+        local anyAvailable, result = auto:setsAreAvailable()
+        if not anyAvailable then
+            mf:postResult( result ) 
+            return
         end
+        menu:show()
     elseif button == "RightButton" then
         -- Handle right-click if needed
     end
