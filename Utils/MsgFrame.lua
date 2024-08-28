@@ -10,43 +10,30 @@ AutoEquip.MsgFrame = {}
 
 local L = AutoEquip.Locales
 local mf = AutoEquip.MsgFrame
+local dbg       = AutoEquip.Debug	-- use for error reporting services
 local frames = AutoEquip.Frames
 
 local FAILURE = false
 
-local frameTitle = L["USER_MSG_FRAME"]
-local infoMsgFrame = frames:createMsgFrame( frameTitle)
+local infoMsgFrame = frames:createMsgFrame( L["USER_INFO_FRAME"] )
 
-local frameTitle = string.format("ERROR: AutoEquip (V 1.0.0)" )
-local errorMsgFrame = frames:createErrorMsgFrame(frameTitle)
+local errorMsgFrame = frames:createErrorMsgFrame( L["USER_ERROR_FRAME"] )
 
-function mf:getInfoMsgFrame()
-	return infoMsgFrame
-end
-function mf:showInfoFrame()
-	frames:showFrame( infoMsgFrame )
-end
-function mf:eraseText()  
-	frames:clearFrame( infoMsgFrame )
-end
-function mf:hideInfoFrame()
-	frames:hideFrame( infoMsgFrame )
-end
-function mf:hideMeter()
-	frames:hideMeter( infoMsgFrame )
-end
 function mf:postMsg( msg )
 	infoMsgFrame.Text:Insert( msg )
+	infoMsgFrame:Show()
 end
 function mf:postResult( result )
 
 	if result[1] ~= FAILURE then return end
 	
-	local resultString = string.format("[FAILURE] %s\n%s", result[2], result[3] )
+	local resultString = string.format("%s %s\n", result[3], result[2] )
 	errorMsgFrame.Text:Insert( resultString )
 	errorMsgFrame:Show()
 end
-function mf:clearText()
-	frames:clearFrameText()
+
+local fileName = "MsgFrame.lua"
+if dbg:debuggingIsEnabled() then
+    DEFAULT_CHAT_FRAME:AddMessage( string.format("%s loaded.", fileName ), 1,1,1 )
 end
 
