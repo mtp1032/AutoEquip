@@ -16,3 +16,6 @@ NOTE 2: If an armor set is incomplete, e.g., missing one or more items, instead 
 
 ### SUPPORTED EXPANSIONS
 Only The War Within, Shadowlands, Cataclysm, and Wrath expansions are supported. Classic Vanilla did not have Heirlooms.
+
+### LOCALIZATION
+Translations exist for French, German, Italian, Korean, Russian, Spanish, Traditional and Simplified Chinese, and Swedish. See AutoEquip\Locales\Locales.lua
