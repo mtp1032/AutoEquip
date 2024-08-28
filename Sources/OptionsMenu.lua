@@ -72,7 +72,7 @@ local function createArmorSetIcon(f, setName, iconFileId, i)
 		local equipSetName = btn.Name:GetText()
 		local result = auto:setRestXpSet(equipSetName)
 		if not result[1] then
-			dbg:Print( result[2])
+			mf:postResult( result )
 			return
 		end
 		optionsPanel:Hide()
@@ -188,3 +188,9 @@ function menu:hide()
 		optionsPanel:Hide()
 	end
 end
+
+local fileName = "OptionsMenu.lua"
+if dbg:debuggingIsEnabled() then
+    DEFAULT_CHAT_FRAME:AddMessage( string.format("%s loaded.", fileName ), 1,1,1 )
+end
+
