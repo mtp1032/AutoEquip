@@ -1,11 +1,11 @@
 ## Interface: 11502, 11503, 20504, 30403, 40400, 100207, 110000, 110002
 ## -----------------------------------------------------------------------
 ## Title: AutoEquip
-## Version: 0.0.1
+## Version: 0.1.9
 ## X-MAJOR: 0
-## X-MINOR: 0
-## X-PATCH: 1
-## Notes: Automatically equips a Rested XP Armor Set
+## X-MINOR: 1
+## X-PATCH: 9
+## Notes: Allows character to automatically equip an armor set upon entering and leaving rest areas.
 ## SavedVariablesPerCharacter: autoEquip_Resting_SetId, autoEquip_Saved_SetId, AutoEquip_DB
 ## 26 August, 2024
 ## OptionalDeps: LibSharedMedia-3.0, LibDBIcon-1.0, LibDataBroker-1.1
