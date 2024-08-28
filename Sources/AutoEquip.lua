@@ -14,7 +14,8 @@ local auto = AutoEquip.AutoEquip
 
 local L = AutoEquip.Locales
 local dbg       = AutoEquip.Debug	-- use for error reporting services
-local mf = AutoEquip.MsgFrame
+local mf        = AutoEquip.MsgFrame
+local frames    = AutoEquip.Frames
 
 local EMPTY_STR = ""
 local SUCCESS   = true
@@ -51,7 +52,15 @@ local function canUseEquipmentSets()
     if UnitLevel("Player") < 10 then
         canUse = false
         reason = string.format( L["LEVEL_REQUIREMENT"], UnitName("Player"))
-        result = dbg:setResult( reason, stackTrace )
+        result = dbg:setResult( reason, dbg:prefix() )
+        return canUse, result
+    end
+
+    local numEquipSets = C_EquipmentSet.GetNumEquipmentSets()
+    if numEquipSets == 0 then
+        canUse = false
+        local reason = string.format(L["NO_SETS_EXIST"], UnitName("Player"))
+        result = dbg:setResult( reason, dbg:prefix() )
         return canUse, result
     end
 
@@ -59,7 +68,7 @@ local function canUseEquipmentSets()
     if not C_EquipmentSet.CanUseEquipmentSets() then
         canUse = false
         reason = L["EQUIPMENT_SETS_UNAVAILABLE"]
-        result = dbg:setResult( reason, stackTrace )
+        result = dbg:setResult( reason, dbg:prefix() )
         return canUse, result
     end
     return canUse, result
@@ -91,7 +100,7 @@ local function getSetNameByID(setId)
     end
     if setName == nil then
         local reason = string.format( L["EQUIPMENT_SET_NOT_FOUND"] )
-        result = dbg:setResult( reason, dbg:simpleStackTrace( debugstack(2)) )
+        result = dbg:setResult( reason, dbg:prefix() )
     end
 
     return nil, nil, result
@@ -113,7 +122,7 @@ local function getSetIdByName(setName)
     end
     if setId == nil then
         local reason = string.format( L["EQUIPMENT_SET_NOT_FOUND"] )
-        result = dbg:setResult( reason, dbg:simpleStackTrace( debugstack(2)) )
+        result = dbg:setResult( reason, dbg:prefix())
     end
 
     return setId, isEquipped, result
@@ -149,14 +158,8 @@ function auto:setRestXpSet( inputXPsetName ) -- Set only via the options menu
     local result = {SUCCESS, EMPTY_STR, EMPTY_STR}
 
     local canUse, result = canUseEquipmentSets()
-    if not result[1] then return result end
+    if not result[1] then return mf:postResult( result ) end
 
-    local numEquipSets = C_EquipmentSet.GetNumEquipmentSets()
-    if numEquipSets == 0 then
-        local reason = L["NO_SETS_EXIST"]
-        result = dbg:setResult( reason, dbg:simpleStackTrace(debugstack(2)) )
-        return result
-    end
 
     local restingSetId, equipped, result = getSetIdByName( inputXPsetName )
     if not result[1] then return result end
@@ -168,12 +171,19 @@ function auto:setRestXpSet( inputXPsetName ) -- Set only via the options menu
     -- If player is already in a resting zone and his resting set is not equipped,
     -- then equip the resting set.
     if IsResting() then 
-        if not setIsEquipped( autoEquip_Resting_SetId ) then
-            local wasEquipped = C_EquipmentSet.UseEquipmentSet( autoEquip_Resting_SetId )
-            if not wasEquipped then
-                local reason = string.format(L["FAILED_TO_EQUIP_SET"], inputXPsetName)
-                local result = dbg:setResult( reason, dbg:simpleStackTrace( debugstack(2)) )
-                return result
+        local canUse, result = canUseEquipmentSets()
+        if not result[1] then 
+            mf:postResult( result) 
+            return
+        end
+        if canUse then
+            if not setIsEquipped( autoEquip_Resting_SetId ) then
+                local wasEquipped = C_EquipmentSet.UseEquipmentSet( autoEquip_Resting_SetId )
+                if not wasEquipped then
+                    local reason = string.format(L["FAILED_TO_EQUIP_SET"], inputXPsetName)
+                    local result = dbg:setResult( reason, dbg:prefix() )
+                    return result
+                end
             end
         end
     end
@@ -193,8 +203,13 @@ function(self, event, ...)
     if event == "PLAYER_UPDATE_RESTING" then
         -- PLAYER_UPDATE_RESTING is fired when the player enters or leaves a resting area
         local canUse, result = canUseEquipmentSets()
-        if not result[1] then mf:postResult( result[2]) end
+        if not result[1] then 
+            mf:postResult( result) 
+            return
+        end
+
         local msg = nil
+        local color = nil
         local restingSetName = getSetNameByID( autoEquip_Resting_SetId )
         local restingSetId, equipped, result = getSetIdByName( restingSetName )
         local savedSetName = getSetNameByID( autoEquip_Saved_SetId )
@@ -205,28 +220,36 @@ function(self, event, ...)
         if IsResting() then
             -- Player has entered a resting area. If the player is not wearing
             -- his resting set, then equip it. If he is, do nothing.
-            
+
+            dbg:print( UnitName("Player"), "is now resting." )
+        
             if not setIsEquipped( restingSetId ) then
+                color = 2
                 local wasEquipped = C_EquipmentSet.UseEquipmentSet( restingSetId )
                 if not wasEquipped then
                     local reason = string.format(L["FAILED_TO_EQUIP_SET"], restingSetId )
-                    local result = dbg:setResult( reason, dbg:simpleStackTrace( debugstack(2)) )
-                    return result
+                    local result = dbg:setResult( reason, dbg:prefix() )
+                    mf:postResult( result )
                 end
-                    end
-            local setName = getSetNameByID()
-            msg = string.format( L["ENTERED_REST_AREA"], restingSetName)
+                local setName = getSetNameByID()
+                msg = string.format( L["ENTERED_REST_AREA"], restingSetName)
+            end
         else
+            dbg:print( UnitName("Player") .. "no longer resting." )
+
+            color = 1
             -- Player has left the resting zone. Equip the saved set
             wasEquipped = C_EquipmentSet.UseEquipmentSet( savedSetId )
             if not wasEquipped then
                 local reason = string.format(L["FAILED_TO_EQUIP_SET"], savedSetName )
-                local result = dbg:setResult( reason, dbg:simpleStackTrace( debugstack(2)) )
-                return result
+                local result = dbg:setResult( reason, dbg:prefix() )
+                mf:postResult( result )
+                return
             end
             msg = string.format( L["LEFT_REST_AREA"], savedSetName )
         end
-        dbg:notifyEquipmentChange( msg, 3 )
+
+        frames:notifyEquipmentChange( msg, 3, color )
         -- UIErrorsFrame:AddMessage(msg, 0.0, 1.0, 0.0)
         DEFAULT_CHAT_FRAME:AddMessage(msg, 0.0, 1.0, 0.0)
     end
@@ -276,3 +299,9 @@ function auto:getEquippedSet()
     local setId, setName = getEquippedSet()
     return setId, setName
 end
+
+local fileName = "AutoEquip.lua"
+if dbg:debuggingIsEnabled() then
+    DEFAULT_CHAT_FRAME:AddMessage( string.format("%s loaded.", fileName ), 1,1,1 )
+end
+
