@@ -15,19 +15,23 @@ local FAILURE	= false
 
 local function getExpansionName( )
     local expansionLevel = GetExpansionLevel()
-    local expansionNames = { -- Use a table to map expansion levels to names
-        [LE_EXPANSION_DRAGONFLIGHT] = "Dragon Flight",
-        [LE_EXPANSION_SHADOWLANDS] = "Shadowlands",
-        [LE_EXPANSION_CATACLYSM] = "Classic (Cataclysm)",
-        [LE_EXPANSION_WRATH_OF_THE_LICH_KING] = "Classic (WotLK)",
-        [LE_EXPANSION_CLASSIC] = "Classic (Vanilla)",
+	print( "Expansion Level:", expansionLevel ) -- debug print statement
 
-        [LE_EXPANSION_MISTS_OF_PANDARIA] = "Classic (Mists of Pandaria",
-        [LE_EXPANSION_LEGION] = "Classic (Legion)",
-        [LE_EXPANSION_BATTLE_FOR_AZEROTH] = "Classic (Battle for Azeroth)",
-        [LE_EXPANSION_WAR_WITHIN]   = "Retail (The War Within)"
+    local expansionNames = { -- Use numeric keys to map expansion levels to names
+        [0] = "Classic (Vanilla)",
+        [1] = "Classic (Burning Crusade)",
+        [2] = "Classic (WotLK)",
+        [3] = "Classic (Cataclysm)",
+        [4] = "Classic (Mists of Pandaria)",
+        [5] = "Classic (Warlords of Draenor)",
+        [6] = "Classic (Legion)",
+        [7] = "Classic (Battle for Azeroth)",
+        [8] = "Shadowlands",
+        [9] = "Dragon Flight",
+        [10] = "The War Within"
     }
-    return expansionNames[expansionLevel] -- Directly return the mapped name
+
+    return expansionNames[expansionLevel]
 end
 
 -- Form a string representing the library's version number.
@@ -78,10 +82,10 @@ if LOCALE == "enUS" then
 	
 	L["EQUIPMENT_SET_NOT_FOUND"]	= "ERROR: Equipment set not found. Check spelling.\n"
 	L["EQUIPSET_MISSING_ITEMS"] 	= "ERROR: The %s set is missing one or more items.\n"
-	L["NO_SETS_EXIST"]				= "INFO: %s has no equipment sets. "
+	L["NO_SETS_EXIST"]				= "INFO: %s has not yet defined any equipment sets."	-- @@ Replace with L["EQUIPMENT_SETS_NOT_DEFINED"]
 	L["LEVEL_REQUIREMENT"]			= "INFO: %s must be level 10 or above to use the equipment manager."
 	L["EQUIPMENT_SETS_UNAVAILABLE"] = string.format( "ERROR: No usable equipment sets are available. This error often arises\n because an equipment set is missing one or more items.")
-	L["EQUIPMENT_SETS_NOT_DEFINED"] = "ERROR: %s has not yet defined any equipment sets."
+	L["EQUIPMENT_SETS_NOT_DEFINED"] = "INFO: %s has not yet defined any equipment sets." -- @@ Retranslate this entry
 	L["LEFT_REST_AREA"]				= "INFO: LEFT Rest area. Equipped %s equipment set. "
 	L["ENTERED_REST_AREA"] 			= "INFO: Entered Rest Area. Equipped %s equipment set. "
 	L["FAILED_TO_EQUIP_SET"] 		= "ERROR: %s set was not equipped. "
