@@ -8,6 +8,8 @@ local ADDON_NAME, AutoEquip = ...
 AutoEquip = AutoEquip or {}
 AutoEquip.Frames = {}
 local frames = AutoEquip.Frames
+local dbg = AutoEquip.Debug	-- use for error reporting services
+
 
 -- https://us.forums.blizzard.com/en/wow/t/addons-now-usable-in-shadowlands-beta/586355/16
 -- https://wow.gamepedia.com/API_Frame_SetBackdrop
@@ -241,5 +243,53 @@ function frames:clearFrame(f) -- erases the text in the edit box
 	f.Text:EnableKeyboard( false )   
 	f.Text:SetText("") 
 	f.Text:ClearFocus()
+end
+
+-- Create a frame for displaying combat notifications
+local notificationFrame = CreateFrame("Frame", "notificationFrame", UIParent)
+notificationFrame:SetSize(300, 50)  -- Width, Height
+notificationFrame:SetPoint("CENTER", 0, GetScreenHeight() * 0.375)  -- Positioning at X=0 and 3/4 from the bottom to the top
+notificationFrame:Hide()  -- Initially hide the frame
+
+-- Create the text inside the frame
+local notificationText = notificationFrame:CreateFontString(nil, "OVERLAY")
+notificationText:SetFont("Fonts\\FRIZQT__.TTF", 24, "OUTLINE")  -- Set the font, size, and outline
+notificationText:SetPoint("CENTER", notificationFrame, "CENTER")  -- Center the text within the frame
+notificationText:SetTextColor(0.0, 1.0, 0.0)  -- Red color for the text
+notificationText:SetShadowOffset(1, -1)  -- Black shadow to match Blizzard's combat text
+
+local red = 1
+local green = 2
+-- Function to display the notification
+function frames:notifyEquipmentChange(message, duration, color)
+    notificationText:SetText(message)
+    if color == red then
+        notificationText:SetTextColor(1.0, 0.0, 0.0)  -- Red color for the text
+        notificationText:SetShadowOffset(1, -1)  -- Black shadow to match Blizzard's combat text
+    end
+    if color == green then
+        notificationText:SetTextColor(0.0, 1.0, 0.0)  -- Red color for the text
+        notificationText:SetShadowOffset(1, -1)  -- Black shadow to match Blizzard's combat text
+    end
+
+    notificationFrame:Show()
+
+    -- Set up a fade-out effect
+    -- duration, example, 5 seconds
+    -- Ending Alpha. 0 is the visibility.
+    UIFrameFadeOut( notificationFrame, duration, 1, 0)
+    
+    -- Hide the frame after the fade is complete
+    C_Timer.After( duration, function()
+        notificationFrame:Hide()
+    end)
+end
+
+
+
+
+local fileName = "Frames.lua"
+if dbg:debuggingIsEnabled() then
+    DEFAULT_CHAT_FRAME:AddMessage( string.format("%s loaded.", fileName ), 1,1,1 )
 end
 
