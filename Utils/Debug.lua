@@ -14,39 +14,19 @@ local EMPTY_STR 	= ""
 local SUCCESS	= true
 local FAILURE	= false
 
+local DEBUG_ENABLED = true
 ---------------------------------------------------------------------------------------------------
 --                      PUBLIC/EXPORTED FUNCTIONS
 ----------------------------------------------------------------------------------------------------
--- Create a frame for displaying combat notifications
-local notificationFrame = CreateFrame("Frame", "notificationFrame", UIParent)
-notificationFrame:SetSize(300, 50)  -- Width, Height
-notificationFrame:SetPoint("CENTER", 0, GetScreenHeight() * 0.375)  -- Positioning at X=0 and 3/4 from the bottom to the top
-notificationFrame:Hide()  -- Initially hide the frame
-
--- Create the text inside the frame
-local notificationText = notificationFrame:CreateFontString(nil, "OVERLAY")
-notificationText:SetFont("Fonts\\FRIZQT__.TTF", 24, "OUTLINE")  -- Set the font, size, and outline
-notificationText:SetPoint("CENTER", notificationFrame, "CENTER")  -- Center the text within the frame
-notificationText:SetTextColor(0.0, 1.0, 0.0)  -- Red color for the text
-notificationText:SetShadowOffset(1, -1)  -- Black shadow to match Blizzard's combat text
-
--- Function to display the notification
-function dbg:notifyEquipmentChange(message, duration)
-    notificationText:SetText(message)
-    notificationFrame:Show()
-
-    -- Set up a fade-out effect
-    -- duration, example, 5 seconds
-    -- Ending Alpha. 0 is the visibility.
-    UIFrameFadeOut( notificationFrame, duration, 1, 0)
-    
-    -- Hide the frame after the fade is complete
-    C_Timer.After( duration, function()
-        notificationFrame:Hide()
-    end)
+function dbg:debuggingIsEnabled()
+    return DEBUG_ENABLED
 end
-
-
+function dbg:enableDebugging()
+    DEBUG_ENABLED = true
+end
+function dbg:disableDebugging()
+    DEBUG_ENABLED = false
+end
 
 function dbg:simpleStackTrace( stackTrace )
 	if stackTrace == nil then stackTrace = debugstack(2) end
@@ -58,7 +38,7 @@ function dbg:simpleStackTrace( stackTrace )
 	local simple = string.format("%s]%d", dir, pieces[2])
 	return simple
 end
-function dbg:Prefix(stackTrace)
+function dbg:prefix(stackTrace)
     stackTrace = stackTrace or debugstack(2)
     
     -- Extract the relevant part of the stack trace (filename and line number)
@@ -74,8 +54,8 @@ function dbg:Prefix(stackTrace)
     local prefix = string.format("[%s:%d] ", fileName, tonumber(lineNumber))
     return prefix
 end
-function dbg:Print(...)
-    local prefix = dbg:Prefix(debugstack(2))
+function dbg:print(...)
+    local prefix = dbg:prefix(debugstack(2))
 
     -- Convert all arguments to strings and concatenate them with a space delimiter
     local args = {...}
@@ -88,7 +68,12 @@ function dbg:Print(...)
     -- Directly call the global print function
     print(output)
 end
-function dbg:setResult( reason, stackTrace )
-	return 	{ FAILURE, reason, stackTrace }
+function dbg:setResult( reason, location )
+	return 	{ FAILURE, reason, location }
+end
+
+local fileName = "Debug.lua"
+if dbg:debuggingIsEnabled() then
+    DEFAULT_CHAT_FRAME:AddMessage( string.format("%s loaded.", fileName ), 1,1,1 )
 end
 
