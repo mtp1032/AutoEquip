@@ -15,8 +15,6 @@ local FAILURE	= false
 
 local function getExpansionName( )
     local expansionLevel = GetExpansionLevel()
-	print( "Expansion Level:", expansionLevel ) -- debug print statement
-
     local expansionNames = { -- Use numeric keys to map expansion levels to names
         [0] = "Classic (Vanilla)",
         [1] = "Classic (Burning Crusade)",
@@ -48,7 +46,7 @@ local L = setmetatable({}, { __index = function(t, k)
 	return v
 end })
 
-AutoEquip.Locales = L
+AutoEquip.Locales = L 
 
 -- Common strings that don't change across locales
 L["ADDON_NAME"]			= ADDON_NAME
@@ -61,8 +59,8 @@ if LOCALE == "enUS" then
 
 	L["ADDON_AND_VERSION"] 	= string.format("%s v%s (%s)", L["ADDON_NAME"], L["VERSION"], L["EXPANSION_NAME"] )
 
-	L["USER_INFO_FRAME"]	= "User Information Messages"
-	L["USER_ERROR_FRAME"] 	= "User Error Messages"
+	L["USER_INFO_FRAME"]	= "Information Messages"
+	L["USER_ERROR_FRAME"] 	= "Error Messages"
 	L["LEFT_CLICK_FOR_OPTIONS_MENU"] 	= "Left Click to display In-Game Options Menu."
 	L["HELP_FRAME_TITLE"]	= string.format("Help: %s", L["ADDON_AND_VERSION"])
 	L["ADDON_LOADED_MSG"]	= string.format("%s Loaded.", L["ADDON_AND_VERSION"])
@@ -86,7 +84,7 @@ if LOCALE == "enUS" then
 	L["LEVEL_REQUIREMENT"]			= "INFO: %s must be level 10 or above to use the equipment manager."
 	L["EQUIPMENT_SETS_UNAVAILABLE"] = string.format( "ERROR: No usable equipment sets are available. This error often arises\n because an equipment set is missing one or more items.")
 	L["EQUIPMENT_SETS_NOT_DEFINED"] = "INFO: %s has not yet defined any equipment sets." -- @@ Retranslate this entry
-	L["LEFT_REST_AREA"]				= "INFO: LEFT Rest area. Equipped %s equipment set. "
+	L["LEFT_REST_AREA"]				= "INFO: Left Rest area. Equipped %s equipment set. "
 	L["ENTERED_REST_AREA"] 			= "INFO: Entered Rest Area. Equipped %s equipment set. "
 	L["FAILED_TO_EQUIP_SET"] 		= "ERROR: %s set was not equipped. "
 	L["CURRENT_EQUIPPED_SET"]		= "Currently Equipped: %s\n"
