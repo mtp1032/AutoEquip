@@ -18,6 +18,9 @@ local dbg = AutoEquip.Debug	-- use for error reporting services
 local DEFAULT_FRAME_WIDTH = 600
 local DEFAULT_FRAME_HEIGHT = 400
 
+frames.RED  = 1
+frames.GREEN    = 2
+
 --------------------------------------------------------------------------
 --                         CREATE THE VARIOUS BUTTONS
 --------------------------------------------------------------------------
@@ -185,12 +188,6 @@ function frames:createErrorMsgFrame(title)
     createClearButton(f, "BOTTOM",f, 5, 5)
     return f
 end
-function frames:printErrorMsg( msg )
-        UIErrorsFrame:AddMessage( msg, 1.0, 0.0, 0.0 ) 
-end
-function frames:printInfoMsg( msg )
-    UIErrorsFrame:AddMessage( msg, 1.0, 1.0, 0.0 ) 
-end
 --  Create the frame where info messages are posted
 function frames:createMsgFrame( title )
     local f = createTopFrame("MsgFrame", 400, 600, 0, 0, 0 )
@@ -216,34 +213,6 @@ function frames:createMsgFrame( title )
     createClearButton(f, "BOTTOMLEFT", 5, 5)
     return f
 end
--------------------------------------------------------------------------
---                          UTILITY FUNCTIONS
--------------------------------------------------------------------------
-function frames:hideFrame( f )
-	if f == nil then
-		return
-	end
-	if f:IsVisible() == true then
-		f:Hide()
-	end
-end
-function frames:showFrame(f)
-    if f == nil then
-        return
-	end
-	if f:IsVisible() == false then
-		f:Show()
-	end
-end
-function frames:clearFrame(f) -- erases the text in the edit box
-	if f == nil then
-		return
-	end
-	f.Text:EnableMouse( false )    
-	f.Text:EnableKeyboard( false )   
-	f.Text:SetText("") 
-	f.Text:ClearFocus()
-end
 
 -- Create a frame for displaying combat notifications
 local notificationFrame = CreateFrame("Frame", "notificationFrame", UIParent)
@@ -258,16 +227,14 @@ notificationText:SetPoint("CENTER", notificationFrame, "CENTER")  -- Center the 
 notificationText:SetTextColor(0.0, 1.0, 0.0)  -- Red color for the text
 notificationText:SetShadowOffset(1, -1)  -- Black shadow to match Blizzard's combat text
 
-local red = 1
-local green = 2
 -- Function to display the notification
 function frames:notifyEquipmentChange(message, duration, color)
     notificationText:SetText(message)
-    if color == red then
+    if color == frames.RED then
         notificationText:SetTextColor(1.0, 0.0, 0.0)  -- Red color for the text
         notificationText:SetShadowOffset(1, -1)  -- Black shadow to match Blizzard's combat text
     end
-    if color == green then
+    if color == frames.GREEN then
         notificationText:SetTextColor(0.0, 1.0, 0.0)  -- Red color for the text
         notificationText:SetShadowOffset(1, -1)  -- Black shadow to match Blizzard's combat text
     end
