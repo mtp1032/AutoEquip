@@ -71,6 +71,26 @@ end
 function dbg:setResult( reason, location )
 	return 	{ FAILURE, reason, location }
 end
+function dbg:customErrorDisplay( message, messageType )
+    if messageType ~= 1038 then return end
+    PlaySound( 9555 )
+
+    -- Example: Display the error message in the middle of the screen
+    local frame = CreateFrame("Frame", nil, UIParent)
+    frame:SetSize(400, 100)
+    frame:SetPoint("CENTER", 0, 250 )
+
+    local text = frame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    text:SetPoint("CENTER")
+    text:SetText("INFO: " .. message)
+
+    -- Fade out and remove the frame after a few seconds
+    C_Timer.After(5, function() 
+        frame:Hide()
+        frame:SetScript("OnUpdate", nil)
+        frame:SetScript("OnHide", function() frame:SetParent(nil) end)
+    end)
+end
 
 local fileName = "Debug.lua"
 if dbg:debuggingIsEnabled() then
