@@ -85,7 +85,7 @@ local function enumSetNames()
     return setNames
 end
 -- returns the setName, isEquipped, and result.
-local function getSetNameByID(setId)
+local function getSetNameByID( setId )
     local result = {SUCCESS, EMPTY_STR, EMPTY_STR}
     local setName = nil
     local isEquipped = false
@@ -98,17 +98,17 @@ local function getSetNameByID(setId)
             return setName, isEquipped, result
         end
     end
-    if setName == nil then
-        local reason = string.format( L["EQUIPMENT_SET_NOT_FOUND"] )
-        result = dbg:setResult( reason, dbg:prefix() )
-    end
+    assert( setName == nil )
 
+    -- We're here because the input setId did not identify any of the player's armor sets.
+    local reason = L["EQUIPMENT_SET_NOT_FOUND"]
+    result = dbg:setResult( reason, dbg:prefix() )
     return nil, nil, result
 end
 -- returns the setId, isEquipped, and result
 local function getSetIdByName(setName)
     local result = {SUCCESS, EMPTY_STR, EMPTY_STR}
-    local isEquipped = false
+    local isEquipped = nil
     local setId = nil
 
     local setIds = C_EquipmentSet.GetEquipmentSetIDs()
@@ -120,13 +120,15 @@ local function getSetIdByName(setName)
             return setId, isEquipped, result
         end
     end
-    if setId == nil then
-        local reason = string.format( L["EQUIPMENT_SET_NOT_FOUND"] )
-        result = dbg:setResult( reason, dbg:prefix())
-    end
+    -- we're here because the player's input armor set name was not found.
+    assert( setId == nil )
 
-    return setId, isEquipped, result
+    local reason = L["EQUIPMENT_SET_NOT_FOUND"]
+    result = dbg:setResult( reason, dbg:prefix() )
+
+    return nil, nil, result
 end
+-- returns isEquipped, result (result is always SUCCESSFUL)
 local function setIsEquipped(setId)
     local result = {SUCCESS, EMPTY_STR, EMPTY_STR}
     local isEquipped = false
@@ -134,7 +136,7 @@ local function setIsEquipped(setId)
 
     local setIds = C_EquipmentSet.GetEquipmentSetIDs()
     for i = 1, #setIds do
-        local setName, _, id, equipped = C_EquipmentSet.GetEquipmentSetInfo(setIds[i])
+        local _, _, id, equipped = C_EquipmentSet.GetEquipmentSetInfo(setIds[i])
         if setId == id then
             isEquipped = equipped
         end
@@ -143,15 +145,18 @@ local function setIsEquipped(setId)
 end
 -- return setId, setName. Returns nil if no set is equipped.
 local function getEquippedSet()
+    local result = {SUCCESS, EMPTY_STR, EMPTY_STR}
     
     local setIds = C_EquipmentSet.GetEquipmentSetIDs()
     for i = 1, #setIds do
         local setName, _, setId, equipped = C_EquipmentSet.GetEquipmentSetInfo(setIds[i])
         if equipped then 
-            return setId, setName
+            return setId, setName, result
         end
-    end
-    return nil, nil
+    end    -- we're here because the player is equipped with an undefined set.
+    local reason = L["EQUIPMENT_SET_NOT_FOUND"]
+    result = dbg:setResult( reason, dbg:prefix() )
+    return nil, nil, result
 end
 
 function auto:setRestXpSet( inputXPsetName ) -- Set only via the options menu
@@ -161,18 +166,26 @@ function auto:setRestXpSet( inputXPsetName ) -- Set only via the options menu
     if numEquipSets == 0 then
         local reason = string.format( L["EQUIPMENT_SETS_NOT_DEFINED"], UnitName("Player"))
         result = dbg:setResult( reason, dbg:prefix() )
-        return 
+        return result
     end
 
     local canUse, result = canUseEquipmentSets()
     if not result[1] then 
-        mf:postResult( result )
         return result
     end
 
     local restingSetId, equipped, result = getSetIdByName( inputXPsetName )
-    if not result[1] then return result end
-    local savedSetId, saveSetName = getEquippedSet()
+    if not result[1] then 
+        mf:postResult( result )
+        return
+    end
+
+    local savedSetId, savedSetName, result = getEquippedSet()
+    if not result[1] then
+        mf:postResult( result )
+        return
+    end
+
 
     autoEquip_Resting_SetId = restingSetId
     autoEquip_Saved_SetId   = savedSetId
@@ -201,60 +214,62 @@ function(self, event, ...)
     local arg = {...}
 
     if event == "PLAYER_UPDATE_RESTING" then
-        -- PLAYER_UPDATE_RESTING is fired when the player enters or leaves a resting area
-        local canUse, result = canUseEquipmentSets()
-        if not result[1] then 
-            if dbg:debuggingIsEnabled() then
-                mf:postResult( result) 
-            end
-            return
-        end
 
         local msg = nil
         local color = nil
-        local restingSetName = getSetNameByID( autoEquip_Resting_SetId )
-        local restingSetId, equipped, result = getSetIdByName( restingSetName )
-        local savedSetName = getSetNameByID( autoEquip_Saved_SetId )
-        local savedSetId, equipped, result = getSetIdByName( savedSetName )
+        local isEquipped = nil
+        local result = {SUCCESS, EMPTY_STR, EMPTY_STR}
 
-        local wasEquipped = false
+        local restingSetName, _, result = getSetNameByID( autoEquip_Resting_SetId )
+        if not result[1] then
+            mf:postResult( result )
+            return
+        end
+        local restingSetId, _, result = getSetIdByName( restingSetName )
+        if not result[1] then
+            mf:postResult( result )
+            return
+        end
+
+        local savedSetName, _, result = getSetNameByID( autoEquip_Saved_SetId )
+        if not result[1] then
+            mf:postResult( result )
+            return
+        end
+
+        local savedSetId, _, result = getSetIdByName( savedSetName )
+        if not result[1] then
+            mf:postResult( result )
+            return
+        end
 
         if IsResting() then
+            color = frames.GREEN
+        
             -- Player has entered a resting area. If the player is not wearing
             -- his resting set, then equip it. If he is, do nothing.
-
-            if dbg:debuggingIsEnabled() then
-                dbg:print( UnitName("Player"), "is resting." )
-            end
-        
-            if not setIsEquipped( restingSetId ) then
-                color = 2
-                local wasEquipped = C_EquipmentSet.UseEquipmentSet( restingSetId )
-                if not wasEquipped then
-                    local reason = string.format(L["FAILED_TO_EQUIP_SET"], restingSetId )
+            local isEquipped, result = setIsEquipped( restingSetId )
+            if not isEquipped then
+                local successful = C_EquipmentSet.UseEquipmentSet( restingSetId )
+                if not successful then
+                    local reason = string.format(L["FAILED_TO_EQUIP_SET"], restingSetName )
                     local result = dbg:setResult( reason, dbg:prefix() )
                     mf:postResult( result )
+                    return value
                 end
-                local setName = getSetNameByID()
                 msg = string.format( L["ENTERED_REST_AREA"], restingSetName)
             end
         else
-            if dbg:debuggingIsEnabled() then
-                dbg:print( UnitName("Player"), "is not resting." )
-            end
-
-            color = 1
+            color = frames.RED
             -- Player has left the resting zone. Equip the saved set
-            wasEquipped = C_EquipmentSet.UseEquipmentSet( savedSetId )
-            if not wasEquipped then
+            local successful = C_EquipmentSet.UseEquipmentSet( savedSetId )
+            if not successful then
                 local reason = string.format(L["FAILED_TO_EQUIP_SET"], savedSetName )
                 local result = dbg:setResult( reason, dbg:prefix() )
                 mf:postResult( result )
                 return
             end
-            if dbg:debuggingIsEnabled() then
-                msg = string.format( L["LEFT_REST_AREA"], savedSetName )
-            end
+            msg = string.format( L["LEFT_REST_AREA"], savedSetName )
         end
 
         frames:notifyEquipmentChange( msg, 3, color )
@@ -291,9 +306,9 @@ function auto:setsAreAvailable()
         return areAvailable, result
     end
 
-    local setIDs = C_EquipmentSet.GetEquipmentSetIDs()
+    local setIds = C_EquipmentSet.GetEquipmentSetIDs()
 
-    if setIDs == nil or #setIDs == 0 then
+    if setIds == nil or #setIds == 0 then
         local reason = string.format( L["EQUIPMENT_SETS_NOT_DEFINED"], UnitName("Player"))
         result = dbg:setResult( reason, dbg:prefix() )
         areAvailable = false
