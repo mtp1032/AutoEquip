@@ -64,7 +64,10 @@ if LOCALE == "enUS" then
 	L["LEFT_CLICK_FOR_OPTIONS_MENU"] 	= "Left Click to display In-Game Options Menu."
 	L["HELP_FRAME_TITLE"]	= string.format("Help: %s", L["ADDON_AND_VERSION"])
 	L["ADDON_LOADED_MSG"]	= string.format("%s Loaded.", L["ADDON_AND_VERSION"])
-
+	L["DEBUGGING_ENABLED"]  = "[AutoEquip] Debugging Now Enabled."
+	L["DEBUGGING_DISABLED"] = "[AutoEquip] Debugging Now Disabled"
+	L["LOGIN_MESSAGE"] 		= "[%s] %s equipped with %s set (Id %d) at LOGIN."
+	L["SWITCHED_SETS"] 		= "[%s] %s switched to %s set (Id %d)."
 	L["LEFTCLICK_FOR_OPTIONS_MENU"]	= string.format( "Left click to display the %s Options Menu.", L["ADDON_NAME"] )
 
 	L["DESCR_SUBHEADER"] = "Auto Save & Restore Your Equipment Sets"
@@ -84,8 +87,8 @@ if LOCALE == "enUS" then
 	L["LEVEL_REQUIREMENT"]			= "INFO: %s must be level 10 or above to use the equipment manager."
 	L["EQUIPMENT_SETS_UNAVAILABLE"] = string.format( "ERROR: No usable equipment sets are available. This error often arises\n because an equipment set is missing one or more items.")
 	L["EQUIPMENT_SETS_NOT_DEFINED"] = "INFO: %s has not yet defined any equipment sets." -- @@ Retranslate this entry
-	L["LEFT_REST_AREA"]				= "INFO: Left Rest area. Equipped %s equipment set. "
-	L["ENTERED_REST_AREA"] 			= "INFO: Entered Rest Area. Equipped %s equipment set. "
+	L["LEFT_REST_AREA"]				= "%s Left Rest area. Equipped %s equipment set. "
+	L["ENTERED_REST_AREA"] 			= "%s Entered Rest Area. Equipped %s equipment set. "
 	L["FAILED_TO_EQUIP_SET"] 		= "ERROR: %s set was not equipped. "
 	L["CURRENT_EQUIPPED_SET"]		= "Currently Equipped: %s\n"
 end
