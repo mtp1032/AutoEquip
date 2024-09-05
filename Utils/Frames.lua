@@ -9,17 +9,12 @@ AutoEquip = AutoEquip or {}
 AutoEquip.Frames = {}
 local frames = AutoEquip.Frames
 local dbg = AutoEquip.Debug	-- use for error reporting services
+local L = AutoEquip.Locales
 
-
--- https://us.forums.blizzard.com/en/wow/t/addons-now-usable-in-shadowlands-beta/586355/16
--- https://wow.gamepedia.com/API_Frame_SetBackdrop
--- https://wow.gamepedia.com/EdgeFiles
-
-local DEFAULT_FRAME_WIDTH = 600
-local DEFAULT_FRAME_HEIGHT = 400
-
-frames.RED  = 1
-frames.GREEN    = 2
+local DEFAULT_FRAME_WIDTH   = 600
+local DEFAULT_FRAME_HEIGHT  = 400
+local TITLE_BAR_WIDTH       = 600
+local TITLE_BAR_HEIGHT      = 100
 
 --------------------------------------------------------------------------
 --                         CREATE THE VARIOUS BUTTONS
@@ -56,6 +51,23 @@ local function createClearButton( f, placement, offX, offY )
             self:GetParent().Text:ClearFocus()
         end)
     f.clearButton = clearButton
+end
+local function createDismissButton( f, placement, offX, offY )
+    local DismissButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+    DismissButton:SetPoint(placement, f, 5, 5)
+    DismissButton:SetHeight(25)
+    DismissButton:SetWidth(70)
+    DismissButton:SetText( "Dismiss")
+    DismissButton:SetScript("OnClick", 
+        function(self)
+            -- self:GetParent().Text:EnableMouse( false )    
+            -- self:GetParent().Text:EnableKeyboard( false )   
+            -- self:GetParent().Text:SetText("") 
+            -- self:GetParent().Text:ClearFocus()
+            self:GetParent():Hide()
+        end)
+    f.DismissButton = DismissButton
+    
 end
 local function createReloadButton( f, placement, offX, offY )
     local reloadButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
@@ -103,28 +115,40 @@ end
 --------------------------------------------------------------------------
 --                         CREATE THE FRAMES
 --------------------------------------------------------------------------
-local function createTopFrame( frameName, width, height, red, blue, green )
-	local f = CreateFrame( "Frame", frameName, UIParent, "BasicFrameTemplateWithInset" )
-	if width == nil then
-		width = DEFAULT_FRAME_WIDTH
-	end
-	if height == nil then
-		height = DEFAULT_FRAME_HEIGHT
-	end
-	f:SetSize( width, height )
-	return f
+local FRAME_WIDTH = 600
+local FRAME_HEIGHT = 400
+local TITLE_BAR_WIDTH = 600
+local TITLE_BAR_HEIGHT = 100
+
+local LINE_SEGMENT_LENGTH = 575
+local X_START_POINT = 10
+local Y_START_POINT = 10
+
+local function drawLine(f, yPos)
+    local lineFrame = CreateFrame("FRAME", nil, f)
+    -- lineFrame:SetPoint("CENTER", -10, yPos)
+    lineFrame:SetPoint("CENTER", 0, yPos)
+    lineFrame:SetSize(LINE_SEGMENT_LENGTH, 2)
+    
+    local line = lineFrame:CreateLine(nil, "ARTWORK")
+    line:SetColorTexture(.5, .5, .5, 1) -- Grey per https://wow.gamepedia.com/Power_colors
+    line:SetThickness(2)
+    line:SetStartPoint("LEFT", 0, 0)
+    line:SetEndPoint("RIGHT", 0, 0)
+    lineFrame:Show()
 end
+
 local function createTextDisplay(f)
-    f.SF = CreateFrame("ScrollFrame", "$parent_DF", f, "UIPanelScrollFrameTemplate")
-    f.SF:SetPoint("TOPLEFT", f, 12, -30)
-    f.SF:SetPoint("BOTTOMRIGHT", f, -30, 40)
+    f.ScrollFrame = CreateFrame("ScrollFrame", "$parent_DF", f, "UIPanelScrollFrameTemplate")
+    f.ScrollFrame:SetPoint("TOPLEFT", f, 12, -30)
+    f.ScrollFrame:SetPoint("BOTTOMRIGHT", f, -30, 40)
 
     --                  Now create the EditBox
     f.Text = CreateFrame("EditBox", nil, f)
     f.Text:SetMultiLine(true)
     f.Text:SetSize(DEFAULT_FRAME_WIDTH - 20, DEFAULT_FRAME_HEIGHT )
-    f.Text:SetPoint("TOPLEFT", f.SF)    -- ORIGINALLY TOPLEFT
-    f.Text:SetPoint("BOTTOMRIGHT", f.SF) -- ORIGINALLY BOTTOMRIGHT
+    f.Text:SetPoint("TOPLEFT", f.ScrollFrame)    -- ORIGINALLY TOPLEFT
+    f.Text:SetPoint("BOTTOMRIGHT", f.ScrollFrame) -- ORIGINALLY BOTTOMRIGHT
     f.Text:SetMaxLetters(99999)
     f.Text:SetFontObject(GameFontNormal) -- Color this R 99, G 14, B 55
     f.Text:SetHyperlinksEnabled( true )
@@ -136,127 +160,121 @@ local function createTextDisplay(f)
         function(self) 
             self:ClearFocus() 
         end) 
-    f.SF:SetScrollChild(f.Text)
+    f.ScrollFrame:SetScrollChild(f.Text)
 end
-function frames:createHelpFrame( title )
-	local f = createTopFrame("HelpFrame", 700, 225, 0, 0, 0 )
-	f:SetPoint("CENTER", 0, 200)
-    f:SetFrameStrata("BACKGROUND")
-    f:EnableMouse(true)
-    f:EnableMouseWheel(true)
+
+local function createTextFrame( frameTitle )
+    local f = CreateFrame("Frame", "MsgFrame", UIParent, "BackdropTemplate")
+    f:SetFrameStrata("HIGH")
+    f:SetPoint("CENTER", 0, 100)
+
+    f:SetSize(DEFAULT_FRAME_WIDTH, DEFAULT_FRAME_HEIGHT)
     f:SetMovable(true)
-    f:Hide()
+    f:EnableMouse(true)
     f:RegisterForDrag("LeftButton")
     f:SetScript("OnDragStart", f.StartMoving)
     f:SetScript("OnDragStop", f.StopMovingOrSizing)
+    
+    -- Set the backdrop for the main frame
+    f:SetBackdrop({
+        bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+        edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+        edgeSize = 16,
+        insets = { left = 4, right = 4, top = 4, bottom = 4 }
+    })
+    f:SetBackdropColor(0, 0, 0, 0.7)
+    
+    -- Create the title bar
+    f.titleBar = f:CreateTexture(nil, "ARTWORK")
+    f.titleBar:SetTexture("Interface\\DialogFrame\\UI-DialogBox-Header")
+    f.titleBar:SetPoint("TOP", f, "TOP", 0, 25)  -- Positioned slightly above the frame to overlap
+    f.titleBar:SetSize(TITLE_BAR_WIDTH, TITLE_BAR_HEIGHT)
 
+    -- Create the title text
     f.title = f:CreateFontString(nil, "OVERLAY")
-	f.title:SetFontObject("GameFontHighlight")
-    f.title:SetPoint("CENTER", f.TitleBg, "CENTER", 5, 0)
-	f.title:SetText( title)
-	
-	createTextDisplay(f)
-	createSelectButton(f, "BOTTOMRIGHT", 5, 5)
-	createClearButton(f,"BOTTOMLEFT", 5,5 )
-    return f
-end
---------------------------------------------------------------------------
---                   THESE ARE THE APPLICATION FRAMES
---------------------------------------------------------------------------
---  Create the frame where error messages are posted
-function frames:createErrorMsgFrame(title)
-    local f = createTopFrame( "Errors",600, 200, 0, 0 )
-    f:SetPoint("CENTER", 0, 200)
-    f:SetFrameStrata("BACKGROUND")
-    f:EnableMouse(true)
-    f:EnableMouseWheel(true)
-    f:SetMovable(true)
-    f:Hide()
-    f:RegisterForDrag("LeftButton")
-    f:SetScript("OnDragStart", f.StartMoving)
-    f:SetScript("OnDragStop", f.StopMovingOrSizing)
+    f.title:SetFontObject("GameFontHighlight")
+    f.title:SetPoint("CENTER", f.titleBar, "CENTER", 0, 22)  -- Centered within the title bar
+    f.title:SetTextColor(1, 1, 0)  -- Yellow color (R, G, B)
+	f.title:SetText( frameTitle )
 
-    f.title = f:CreateFontString(nil, "OVERLAY")
-	f.title:SetFontObject("GameFontHighlight")
-    f.title:SetPoint("CENTER", f.TitleBg, "CENTER", 5, 0)
-	f.title:SetText( title)
-	
-    createResizeButton(f)
     createTextDisplay(f)
-    createReloadButton(f, "BOTTOMLEFT",f, 5, 5)
+
+    createResizeButton(f)
     createSelectButton(f, "BOTTOMRIGHT",f, 5, 5)
-    createClearButton(f, "BOTTOM",f, 5, 5)
+    createDismissButton(f, "BOTTOMLEFT",f, 5, 5)
+    return f
+
+end
+
+--------------------------------------------------------------------------
+--                   THESE ARE THE PUBLIC FRAMES
+--------------------------------------------------------------------------
+function frames:createMsgFrame( frameTitle )
+    local f = createTextFrame( frameTitle )
     return f
 end
---  Create the frame where info messages are posted
-function frames:createMsgFrame( title )
-    local f = createTopFrame("MsgFrame", 400, 600, 0, 0, 0 )
-    f:SetResizable( true )
-    f:SetPoint("TOPRIGHT", -100, -200)
-    f:SetFrameStrata("BACKGROUND")
-    f:EnableMouse(true)
-    f:EnableMouseWheel(true)
+
+function frames:createHelpFrame( frameTitle )
+    local f = CreateFrame("Frame", "MsgFrame", UIParent, "BackdropTemplate")
+    f:SetFrameStrata("HIGH")
+    f:SetPoint("CENTER", 0, 100)
+
+    f:SetSize(DEFAULT_FRAME_WIDTH, DEFAULT_FRAME_HEIGHT)
     f:SetMovable(true)
-    f:Hide()
+    f:EnableMouse(true)
     f:RegisterForDrag("LeftButton")
     f:SetScript("OnDragStart", f.StartMoving)
     f:SetScript("OnDragStop", f.StopMovingOrSizing)
     
-    f.title = f:CreateFontString(nil, "OVERLAY");
-	f.title:SetFontObject("GameFontHighlight")
-    f.title:SetPoint("CENTER", f.TitleBg, "CENTER", 5, 0);
-    f.title:SetText(title);
+    -- Set the backdrop for the main frame
+    f:SetBackdrop({
+        bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+        edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+        edgeSize = 16,
+        insets = { left = 4, right = 4, top = 4, bottom = 4 }
+    })
+    f:SetBackdropColor(0, 0, 0, 0.7)
+    
+    -- Create the title bar
+    f.titleBar = f:CreateTexture(nil, "ARTWORK")
+    f.titleBar:SetTexture("Interface\\DialogFrame\\UI-DialogBox-Header")
+    f.titleBar:SetPoint("TOP", f, "TOP", 0, 25)  -- Positioned slightly above the frame to overlap
+    f.titleBar:SetSize(TITLE_BAR_WIDTH, TITLE_BAR_HEIGHT)
 
-	createResizeButton(f)
-	createTextDisplay(f)
-	createSelectButton(f,"BOTTOMRIGHT", 5,5 )
-    createClearButton(f, "BOTTOMLEFT", 5, 5)
+    -- Create the title text
+    f.title = f:CreateFontString(nil, "OVERLAY")
+    f.title:SetFontObject("GameFontHighlight")
+    f.title:SetPoint("CENTER", f.titleBar, "CENTER", 0, 22)  -- Centered within the title bar
+    f.title:SetTextColor(1, 1, 0)  -- Yellow color (R, G, B)
+	f.title:SetText( frameTitle )
+
+    -- createTextDisplay(f)
+    local helpStr = string.format("Slash Commands\n" )
+    local titleHelpStr = nil
+    titleHelpStr = f:CreateFontString( nil, "ARTWORK","GameFontNormalLarge" )
+    titleHelpStr:SetJustifyH("LEFT")
+    titleHelpStr:SetPoint("CENTER", 0, DEFAULT_FRAME_HEIGHT/4 )
+    titleHelpStr:SetText( helpStr )
+
+    local usage = string.format("USAGE:\n")
+    local line1 = string.format("    /auto         - displays this help window.")
+	local line2 = string.format("    /auto help    - displays this help window\n")
+    local line3 = string.format("Debug Tracing?")
+	local line4 = string.format("    /auto debug enable|disable.")
+
+	local bodyText = f:CreateFontString(nil, "ARTWORK","GameFontNormal")
+	bodyText:SetJustifyH("LEFT")
+	bodyText:SetPoint("CENTER", 0, 0 )
+	bodyText:SetText(string.format("%s\n%s\n%s\n%s\n%s", usage, line1, line2, line3, line4 ))
+
+    createDismissButton(f, "BOTTOMLEFT",f, 5, 5)
+
     return f
 end
-
--- Create a frame for displaying combat notifications
-local notificationFrame = CreateFrame("Frame", "notificationFrame", UIParent)
-notificationFrame:SetSize(300, 50)  -- Width, Height
-notificationFrame:SetPoint("CENTER", 0, GetScreenHeight() * 0.375)  -- Positioning at X=0 and 3/4 from the bottom to the top
-notificationFrame:Hide()  -- Initially hide the frame
-
--- Create the text inside the frame
-local notificationText = notificationFrame:CreateFontString(nil, "OVERLAY")
-notificationText:SetFont("Fonts\\FRIZQT__.TTF", 24, "OUTLINE")  -- Set the font, size, and outline
-notificationText:SetPoint("CENTER", notificationFrame, "CENTER")  -- Center the text within the frame
-notificationText:SetTextColor(0.0, 1.0, 0.0)  -- Red color for the text
-notificationText:SetShadowOffset(1, -1)  -- Black shadow to match Blizzard's combat text
-
--- Function to display the notification
-function frames:notifyEquipmentChange(message, duration, color)
-    notificationText:SetText(message)
-    if color == frames.RED then
-        notificationText:SetTextColor(1.0, 0.0, 0.0)  -- Red color for the text
-        notificationText:SetShadowOffset(1, -1)  -- Black shadow to match Blizzard's combat text
-    end
-    if color == frames.GREEN then
-        notificationText:SetTextColor(0.0, 1.0, 0.0)  -- Red color for the text
-        notificationText:SetShadowOffset(1, -1)  -- Black shadow to match Blizzard's combat text
-    end
-
-    notificationFrame:Show()
-
-    -- Set up a fade-out effect
-    -- duration, example, 5 seconds
-    -- Ending Alpha. 0 is the visibility.
-    UIFrameFadeOut( notificationFrame, duration, 1, 0)
-    
-    -- Hide the frame after the fade is complete
-    C_Timer.After( duration, function()
-        notificationFrame:Hide()
-    end)
-end
-
-
 
 
 local fileName = "Frames.lua"
 if dbg:debuggingIsEnabled() then
-    DEFAULT_CHAT_FRAME:AddMessage( string.format("%s loaded.", fileName ), 1,1,1 )
+    DEFAULT_CHAT_FRAME:AddMessage( string.format("[%s] %s loaded.", ADDON_NAME,fileName ), 1,1,1 )
 end
 
