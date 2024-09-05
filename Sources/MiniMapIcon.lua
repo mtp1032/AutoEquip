@@ -19,7 +19,9 @@ local msgFrame = AutoEquip.MsgFrame
 -- Interface/ICONS/INV_Fishingpole_05.blp, 251534
 -- Interface/ICONS/INV_Fishingpole_03.blp, 132933
 -- Interface/ICONS/INV_Misc_Bag_16.blp, 133649
-
+-- 136090 Sleep
+-- 895885 Eye
+-- 1080932 XP
 -- local ICON_AUTO_EQUIP = 251534  -- Fishing Pole
 -- local ICON_AUTO_EQUIP = 132933  -- Fishing Pole
 local ICON_AUTO_EQUIP = "Interface/ICONS/INV_Fishingpole_05.blp"  -- or whichever icon you prefer
@@ -30,12 +32,17 @@ local addon = LibStub("AceAddon-3.0"):NewAddon(ADDON_NAME, "AceConsole-3.0")
 -- Create the click handler for the minimap icon
 local function OnMinimapClick(self, button)
     if button == "LeftButton" and not IsShiftKeyDown() then
-        local anyAvailable, result = auto:setsAreAvailable()
-        if not anyAvailable then
+        local _, result = auto:setsAreAvailable()
+        if not result[1] then 
             mf:postResult( result ) 
-            return
+            return 
         end
-        menu:show()
+        
+        local result = menu:show()
+        if not result[1] then 
+            mf:postResult( result ) 
+            return 
+        end
     elseif button == "RightButton" then
         -- Handle right-click if needed
     end
@@ -47,7 +54,7 @@ local AutoEquip_DB = LibStub("LibDataBroker-1.1"):NewDataObject( ADDON_NAME,
 {
     type = "data source",
     text = ADDON_NAME,
-    icon = ICON_AUTO_EQUIP,  -- Set the icon here
+    icon = 1080932,  -- Set the icon here
     OnTooltipShow = function(tooltip)
         tooltip:AddLine(L["ADDON_AND_VERSION"])
         tooltip:AddLine(L["LEFTCLICK_FOR_OPTIONS_MENU"])
@@ -65,6 +72,6 @@ function addon:OnInitialize()
 end
 local fileName = "MiniMapIcon.lua"
 if dbg:debuggingIsEnabled() then
-    DEFAULT_CHAT_FRAME:AddMessage( string.format("%s loaded.", fileName ), 1,1,1 )
+    DEFAULT_CHAT_FRAME:AddMessage( string.format("[%s] %s loaded.", ADDON_NAME,fileName ), 1,1,1 )
 end
 
