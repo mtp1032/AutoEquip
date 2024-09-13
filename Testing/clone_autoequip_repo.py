@@ -11,7 +11,9 @@ target_directories = [
     r"C:\Program Files (x86)\World of Warcraft\_ptr_\Interface\AddOns",             # Retail PTR
     r"C:\Program Files (x86)\World of Warcraft\_classic_\Interface\AddOns",         # Cataclysm classic
     r"C:\Program Files (x86)\World of Warcraft\_classic_beta_\Interface\AddOns",    # Cataclysm classic beta
+    r"G:\My Drive\Addons-github-clones"
 ]
+# Classic (Vanilla) r"C:\Program Files (x86)\World of Warcraft\_classic_era_\Interface\AddOns",    # Classic Vanilla
 
 def copy_directory(src, dest, ignore_dirs=None):
     """Copy directory while ignoring specified subdirectories."""

@@ -87,13 +87,13 @@ if LOCALE == "enUS" then
 	L["DEBUGGING_ENABLED"]  		= "[%s] Debugging Now Enabled."
 	L["DEBUGGING_DISABLED"] 		= "[%s] Debugging Now Disabled"
 	L["PLAYER_SWITCHED_SETS"] 		= "[%s] %s switched to %s set (Id %d)."
-	L["PLAYER_NOT_EQUIPPED"]		= "[%s] Player not equipped with a define set."
-	L["LEFT_REST_AREA"]				= "%s Left Rest area. Equipped %s equipment set. "
-	L["ENTERED_REST_AREA"] 			= "%s Entered Rest Area. Equipped %s equipment set. "
+	L["PLAYER_NOT_EQUIPPED"]		= "[%s] Player not equipped with a defined set."
+	L["LEFT_REST_AREA"]				= "%s Left Rest area. Equipped  the %s set. "
+	L["ENTERED_REST_AREA"] 			= "%s Entered Rest Area. Equipped the %s set. "
 
 	L["FAILED_TO_EQUIP_SET"] 		= "ERROR: Failed to equip %s set. "
 	L["SET_DOES_NOT_EXIST"]			= "ERROR: Specified set (%s) does not exist."
-	L["EQUIPSET_MISSING_ITEMS"] 	= "ERROR: The %s set is missing one or more items.\n"
+	L["EQUIPSET_MISSING_ITEMS"] 	= "ERROR: The %s set is XXX missing one or more items.\n"
 	L["EQUIPMENT_SETS_UNUSABLE"] 	= "ERROR: The %s set is unusable.\n"
 	L["CANNOT_USE_EQUIPMENT_SETS"] 	= "ERROR: %s's equipment sets are unusable."
 

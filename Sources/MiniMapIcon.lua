@@ -16,6 +16,9 @@ local mf = AutoEquip.MsgFrame
 local menu = AutoEquip.OptionsMenu  -- Ensure menu is properly referenced
 local msgFrame = AutoEquip.MsgFrame
 
+local EMPTY_STR = ""
+local SUCCESS   = true
+
 -- Interface/ICONS/INV_Fishingpole_05.blp, 251534
 -- Interface/ICONS/INV_Fishingpole_03.blp, 132933
 -- Interface/ICONS/INV_Misc_Bag_16.blp, 133649
@@ -31,13 +34,14 @@ local addon = LibStub("AceAddon-3.0"):NewAddon(ADDON_NAME, "AceConsole-3.0")
 
 -- Create the click handler for the minimap icon
 local function OnMinimapClick(self, button)
-    if button == "LeftButton" and not IsShiftKeyDown() then
-        local _, result = auto:setsAreAvailable()
-        if not result[1] then 
-            mf:postResult( result ) 
-            return 
-        end
+    -- if button == "LeftButton" and not IsShiftKeyDown() then
+    --     local result = { SUCCESS, EMPTY_STR, EMPTY_STR }
+    --     if not result[1] then 
+    --         mf:postResult( result ) 
+    --         return 
+    --     end
         
+    if button == "LeftButton" and not IsShiftKeyDown() then
         local result = menu:show()
         if not result[1] then 
             mf:postResult( result ) 
@@ -50,7 +54,7 @@ end
 
 -- The addon's icon state (e.g., position, etc.,) is kept in the AutoEquipDB. Therefore
 -- this is set as the ##SavedVariable in the .toc file
-local AutoEquip_DB = LibStub("LibDataBroker-1.1"):NewDataObject( ADDON_NAME, 
+local AutoEquip_Icons_DB = LibStub("LibDataBroker-1.1"):NewDataObject( ADDON_NAME, 
 {
     type = "data source",
     text = ADDON_NAME,
@@ -66,9 +70,9 @@ local AutoEquip_DB = LibStub("LibDataBroker-1.1"):NewDataObject( ADDON_NAME,
 local icon = LibStub("LibDBIcon-1.0")
 
 function addon:OnInitialize()
-    self.db = LibStub("AceDB-3.0"):New("AutoEquip_DB", 
+    self.db = LibStub("AceDB-3.0"):New("AutoEquip_Icons_DB", 
         { profile = { minimap = { hide = false, }, }, }) 
-    icon:Register(ADDON_NAME, AutoEquip_DB, self.db.profile.minimap)
+    icon:Register(ADDON_NAME, AutoEquip_Icons_DB, self.db.profile.minimap)
 end
 local fileName = "MiniMapIcon.lua"
 if dbg:debuggingIsEnabled() then

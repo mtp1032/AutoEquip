@@ -97,6 +97,20 @@ local function createSelectButton( f, placement, offX, offY )
         end)
     f.selectButton = selectButton
 end
+local function createAcceptButton( f, placement, offX, offY)
+    local acceptButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+	acceptButton:SetPoint(placement, f, offX, offY )-- was -175, 10
+    acceptButton:SetHeight(25)
+    acceptButton:SetWidth(70)
+    acceptButton:SetText( "Accept")
+    acceptButton:SetScript("OnClick", 
+        function(self)
+            dbg:print( "Hello World.")
+        end)
+    f.acceptButton = acceptButton
+
+end
+
 local function createResetButton( f, placement, offX, offY )
     local resetButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
     resetButton:SetPoint(placement, f, 5, 5)
