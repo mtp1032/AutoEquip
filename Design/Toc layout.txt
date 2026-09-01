@@ -1,0 +1,12 @@
+AutoEquip/
+    AutoEquip_Wrath.toc
+    AutoEquip_Cata.toc
+    AutoEquip_MoP.toc
+    AutoEquip_Mainline.toc
+    AutoEquip_Midnight.toc
+    Core.lua
+    EnUS.lua
+    DebugWindow.lua
+    DebugTools.lua
+    AutoEquip.lua
+    Options.lua
