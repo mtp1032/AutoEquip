@@ -5,8 +5,8 @@
 AutoEquip = AutoEquip or {}
 AutoEquip.DebugTools = AutoEquip.DebugTools or {}
 
-if not AutoEquip.enUS then
-    print("|cffff0000[AutoEquip]|r enUS.lua failed to load")
+if not AutoEquip.DebugWindow then
+    print("DebugWindow.lua failed to load")
     return
 end
 
@@ -62,5 +62,5 @@ end
 AutoEquip.DebugTools.loaded = true
 
 if core:debuggingIsEnabled() then
-    print("|cff00ff00[AutoEquip]|r DebugTools.lua loaded")
+    print("DebugTools.lua loaded")
 end

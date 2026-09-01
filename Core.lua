@@ -52,16 +52,16 @@ function core:debuggingIsEnabled()
 end
 function core:enableDebugging()
     DEBUGGING_ENABLED = true
-    -- print("|cFF00FF00[AutoEquip]|r Debug mode enabled")
+    -print("Debug mode enabled")
 end
 function core:disableDebugging()
     DEBUGGING_ENABLED = false
-    print("|cFF00FF00[AutoEquip]|r Debug mode disabled")
+    print("Debug mode disabled")
 end
 
 -- Mark as loaded
 AutoEquip.Core.loaded = true
 -- Load message
 if AutoEquip.Core and AutoEquip.Core:debuggingIsEnabled() then
-    DEFAULT_CHAT_FRAME:AddMessage("core.lua loaded", 0, 1, 0)
+    print("core.lua loaded", 0, 1, 0)
 end
