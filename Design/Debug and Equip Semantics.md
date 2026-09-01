@@ -1,6 +1,23 @@
+Let's start over. I wrote an Addon that automatically loaded equipment sets depending on the location of a player. If the player was in (or entered) a rest area the addon automatically equipped a resting set (usually containing one or more heirlooms). When the player left the resting area, the previous set (having been saved) was reequipped.
+
+At this point, I wanted to add riding. So that when a player mounted his riding set was equipped. When he dismounted the previous set was restored. Well this didn't work. For reasons not important, this didn't work.
+
+So, I've changed the logic.
+
+When a player enters a rest area the resting set is equipped and no previous set is saved.
+When a player exits the rest area the questing set is equipped.
+When a player mounts, the riding set is equipped.
+When a player dismounts, if the player is in a rest area, the rest set is equipped. If not in a rest area the questing set is equipped.
+
+simple. straightforward. 
+
+This solves the problem of saving sets when, for example, a player wearing the questing and the riding set rides into an inn where he is automatically dismounted. First, the PLAYER_RESTING event is triggered, and the current riding set is saved and the resting set is equipped. Then when the DISMOUNT event occurs, resting set is saved and the riding set is reequipped.
+
+The necessary changes will be principally in the AutoEquip.lua file.
+
 I've been thinking and have decided that we need to make two major changes before continuing with the Options menu.
 
-FIRST CHANGE:  A MORE COMPREHENSIE DEBUG ENVIRONMENT
+FIRST CHANGE:  A MORE COMPREHENSIVE DEBUG ENVIRONMENT
 I would like to log every dbg:print() statement to a scrolling window frame. The only text written to the Chat window is a notice that the Addon has been loaded.
 
 Here are the characteristics of the scrolling window frame:
@@ -19,17 +36,4 @@ This extended debug feature will be added to the "DebugTools.lua" file.
 SECOND CHANGE: MOUNTING, RESTING, AND QUESTING SEMANTICS
 
 There are only two location states: rest areas and non-rest areas. Therefore, 
-
-When a player enters a rest area the resting set is equipped and no previous set is saved. Always.
-When a player exits the rest area the questing set is equipped. Always. 
-When a player mounts, the riding set is equipped.
-When a player dismounts, if the player is in a rest area, the rest set is equipped. If not in a rest area the questing set is equipped.
-
-simple. straightforward. 
-
-This solves the problem of saving sets when, for example, a player wearing the questing and the riding set rides into a inn where he is automatically dismounted. First, the PLAYER_RESTING event is triggered, and the current riding set is saved and the resting set is equipped. Then when the DISMOUNT event occurs, resting set is saved and the riding set is reequipped.
-
-The necessary changes will be principally in the AutoEquip.lua file. Also, the current Equipment State info will have to be changed ... but, if I'm right, much simplified.
-
-We could solve issues like these (there are others) with some convoluted logic but it's simpler to equip the set appropriate to the location or role. Period.
 

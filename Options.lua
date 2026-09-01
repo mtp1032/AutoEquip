@@ -5,17 +5,17 @@
 AutoEquip = AutoEquip or {}
 AutoEquip.Options = AutoEquip.Options or {}
 
--- Ensure AutoEquip.lua loaded
-if not AutoEquip.AutoEquip or not AutoEquip.AutoEquip.loaded then
-    print("|cffff0000[AutoEquip]|r AutoEquip.lua not loaded")
-    return
-end
-
 local core  = AutoEquip.Core
 local dbg   = AutoEquip.DebugTools
 local L     = AutoEquip.enUS.L
-local auto  = AutoEquip.AutoEquip
+local equip  = AutoEquip.EquipSet
 local config = AUTOEQUIP_SAVED_VARS_DB.config
+
+-- Ensure AutoEquip.lua loaded
+if not AutoEquip.EquipSet.loaded then
+    dbg:print("EquipSet.lua not loaded")
+    return
+end
 
 -----------------------------------------------------------------
 -- Create Options Panel (Canvas Layout)
@@ -104,14 +104,14 @@ local function PopulateSetIcons()
         local restingBtn = CreateSetButton(content, id, name, y, "Resting Set")
         restingBtn:SetScript("OnClick", function(self)
             config.restingSetName = self.setName
-            print("|cff00ff00AutoEquip:|r Resting set set to:", self.setName)
+            dbg:print("Resting set set to:", self.setName)
         end)
 
         -- Questing Set Button
         local questingBtn = CreateSetButton(content, id, name, y - 50, "Questing Set")
         questingBtn:SetScript("OnClick", function(self)
             config.questingSetName = self.setName
-            print("|cff00ff00AutoEquip:|r Questing set set to:", self.setName)
+            dbg:print("Questing set set to:", self.setName)
         end)
 
         y = y - 110
@@ -130,13 +130,13 @@ saveButton:SetPoint("TOPLEFT", scrollFrame, "BOTTOMLEFT", 0, -12)
 saveButton:SetText("Save")
 
 saveButton:SetScript("OnClick", function()
-    local ok, err = auto:initializeConfig(config.restingSetName, config.questingSetName)
+    local ok, err = equip:initializeConfig(config.restingSetName, config.questingSetName)
     if not ok then
-        print("|cffff0000AutoEquip:|r " .. err)
+        dbg:print("EquipSet: " .. err)
         return
     end
 
-    print("|cff00ff00AutoEquip:|r Configuration saved.")
+    dbg:print("EquipSet: Configuration saved.")
 end)
 
 -----------------------------------------------------------------
@@ -157,7 +157,6 @@ category.ID = panel.name
 Settings.RegisterAddOnCategory(category)
 
 AutoEquip.Options.loaded = true
-
 if core:debuggingIsEnabled() then
-    print("|cff00ff00[AutoEquip]|r Options.lua loaded")
+    dbg:print("Options.lua loaded")
 end

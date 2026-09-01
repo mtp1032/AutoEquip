@@ -5,7 +5,7 @@ AutoEquip = AutoEquip or {}
 AutoEquip.enUS = AutoEquip.enUS or {}
 
 if not AutoEquip.Core.loaded then
-	DEFAULT_CHAT_FRAME:AddMessage("Core.lua failed to load", 1, 0, 0)
+	print("Core.lua failed to load", 1, 0, 0)
     return
 end
 
@@ -39,7 +39,7 @@ end
 AutoEquip.enUS.loaded = true
 
 if core:debuggingIsEnabled() then
-	DEFAULT_CHAT_FRAME:AddMessage("enUS.lua loaded", 0, 1, 0)
+	print("enUS.lua loaded", 0, 1, 0)
 end
 
 

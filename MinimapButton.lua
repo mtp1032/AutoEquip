@@ -5,6 +5,12 @@
 AutoEquip = AutoEquip or {}
 AutoEquip.MinimapButton = AutoEquip.MinimapButton or {}
 
+if not AutoEquip.DebugTools then
+    print("DebugTools.lua failed to load")
+    return
+end
+
+
 local MB = AutoEquip.MinimapButton
 
 -- Saved position
@@ -106,4 +112,8 @@ function MB:Create()
     UpdatePosition(angle)
 
     MB.loaded = true
+    AutoEquip.MinimapButton.loaded = true
+    if core:debuggingIsEnabled() then
+        print("MinimapButton.lua loaded")
+    end
 end

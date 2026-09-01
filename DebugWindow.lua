@@ -5,6 +5,15 @@
 AutoEquip = AutoEquip or {}
 AutoEquip.DebugWindow = AutoEquip.DebugWindow or {}
 
+
+if not AutoEquip.DebugTools then
+    print("DebugTools.lua failed to load")
+    return
+end
+
+local core  = AutoEquip.Core
+local dbg   = AutoEquip.DebugTools
+local L     = AutoEquip.enUS.L
 local DebugWindow = AutoEquip.DebugWindow
 
 -- Persistent storage
@@ -25,7 +34,7 @@ function DebugWindow:SavePosition()
     if not frame then return end
     local x, y = frame:GetLeft(), frame:GetTop()
     saved.x, saved.y = x, y
-end
+end 
 
 -----------------------------------------------------------------
 -- Save Size
@@ -267,5 +276,8 @@ function DebugWindow:Create()
     -------------------------------------------------------------
     -- Done
     -------------------------------------------------------------
-    DebugWindow.loaded = true
+    AutoEquip.DebugWindow.loaded = true
+    if core:debuggingIsEnabled() then
+	    dbg:print("DebugWindow.lua loaded", 0, 1, 0)
+    end
 end
