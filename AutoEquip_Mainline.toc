@@ -5,7 +5,7 @@
 ## X-MINOR: 1
 ## X-PATCH: 0
 ## Version: 0.1.0
-## SavedVariables:
+## SavedVariables: 
 ## SavedVariablesPerCharacter: AUTOEQUIP_SAVED_VARS_DB
 ## IconTexture: 894556
 ## Notes: Automatically equips/unequips a specified armor set
@@ -14,5 +14,6 @@ EnUS.lua
 DebugWindow.lua
 DebugTools.lua
 MinimapButton.lua
-AutoEquip.lua
+EquipSet.lua
 Options.lua
+
