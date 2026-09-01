@@ -1,49 +1,60 @@
+-----------------------------------------------------------------
+-- File: AutoEquip.lua
+-----------------------------------------------------------------
+
 AutoEquip = AutoEquip or {}
-if not AutoEquip.DebugTools.loaded  then
-    DEFAULT_CHAT_FRAME:AddMessage("DebugTools.lua not loaded", 0, 1, 0)
+
+-- Ensure DebugTools loaded
+if not AutoEquip.DebugTools or not AutoEquip.DebugTools.loaded then
+    print("|cffff0000[AutoEquip]|r DebugTools.lua not loaded")
     return
 end
 
-local core  = AutoEquip.Core
-local dbg   = AutoEquip.DebugTools
-local L     = AutoEquip.enUS.L 
+local core = AutoEquip.Core
+local dbg  = AutoEquip.DebugTools
+local L    = AutoEquip.enUS.L
 
-local addonName = core:getAddonInfo()
+AutoEquip.AutoEquip = AutoEquip.AutoEquip or {}
+local auto = AutoEquip.AutoEquip
+
+-- ADDON_NAME from environment is canonical for ADDON_LOADED
+local ADDON_NAME = ...
+
 local eventFrame = CreateFrame("Frame")
 
------------------ SAVED VARIABLES AUTOEQUIP_SAVED_DB -----------------
--- QUESTING_SET_TABLE, RESTING_SET_TABLE
-questingSetTable = {
-    previousSetId = nil,
-    setId = nil
+-----------------------------------------------------------------
+-- SAVED VARIABLES STRUCTURE
+-----------------------------------------------------------------
+
+AUTOEQUIP_SAVED_VARS_DB = AUTOEQUIP_SAVED_VARS_DB or {}
+
+AUTOEQUIP_SAVED_VARS_DB.config = AUTOEQUIP_SAVED_VARS_DB.config or {
+    restingSetName  = nil,
+    questingSetName = nil,
+    ridingSetName   = nil, -- future
 }
-restingSetTable = {
-    previousSetId = nil,
-    setId = nil
+
+AUTOEQUIP_SAVED_VARS_DB.state = AUTOEQUIP_SAVED_VARS_DB.state or {
+    resting = { previousSetId = nil },
+    questing = { previousSetId = nil },
+    riding = { previousSetId = nil },
 }
-------------------- AUTOEQUIP CORE LOGIC ------------------------
--- Helper function to get the equipment set ID by name
--- USAGE: local setId, errorMessage = getArmorSetId("EquipmentSetName")
---        if not setId then dbg:print(errorMessage) end
-local function getArmorSetId( setName )
-    local errorMessage = nil
-    local setId = C_EquipmentSet.GetEquipmentSetID(setName)
-    if not setId then
-        errorMessage = L["UNKNOWN_EQUIPMENT_SET_NAME"]
+
+local config = AUTOEQUIP_SAVED_VARS_DB.config
+local state  = AUTOEQUIP_SAVED_VARS_DB.state
+
+-----------------------------------------------------------------
+-- CORE LOGIC HELPERS
+-----------------------------------------------------------------
+
+local function getEquipmentSetId(setName)
+    local id = C_EquipmentSet.GetEquipmentSetID(setName)
+    if not id then
+        return nil, L["UNKNOWN_EQUIPMENT_SET_NAME"]
     end
-    return setId, errorMessage
+    return id, nil
 end
 
-local function getEquippedSetName( setId )
-    local errorMessage = nil
-    local setName = C_EquipmentSet.GetEquipmentSetInfo(setId)
-    if not setName then
-        errorMessage = L["UNKNOWN_EQUIPMENT_SET_ID"]
-    end
-    return setName, errorMessage
-end
-
--- Helper function to get the ID of the currently equipped equipment set
 local function getEquippedSetId()
     local setIds = C_EquipmentSet.GetEquipmentSetIDs()
     for i = 1, #setIds do
@@ -54,76 +65,124 @@ local function getEquippedSetId()
     end
     return nil
 end
--- Helper function to check if the armor set specified by the setId is currently equipped
-local function isSetEquipped( setId )
-    local _, _, _, isEquipped = C_EquipmentSet.GetEquipmentSetInfo(setId)
-    if isEquipped == nil then
-        errorMessage = L["UNKNOWN_EQUIPMENT_SET_ID"]
-        return
+
+local function isSetEquipped(setId)
+    local _, _, _, equipped = C_EquipmentSet.GetEquipmentSetInfo(setId)
+    if equipped == nil then
+        return nil, L["UNKNOWN_EQUIPMENT_SET_ID"]
     end
-    return isEquipped
+    return equipped, nil
 end
 
--- Equip the riding set
-local function equipArmorSet( setId )
-  C_EquipmentSet.UseEquipmentSet(setId)
+local function equipSet(setId)
+    if not setId then return end
+    C_EquipmentSet.UseEquipmentSet(setId)
 end
 
--- When the PLAYER_UPDATE_RESTING event is fired, check if the player is resting or not. 
--- If resting, equip the heirloom set. If not resting, restore the previous set.
+-----------------------------------------------------------------
+-- RESTING LOGIC
+-----------------------------------------------------------------
 
 local function UpdateRestingState()
-    local heirloomSetId = restingSetTable.setId
-    if IsResting() and not isSetEquipped( heirloomSetId ) then
-        dbg:print("Entered Rest Area, equip Heirloom Set")
-        restingSetTable.previousHeirloomSetId = getEquippedSetId()
-        equipArmorSet( heirloomSetId )
-    
-    elseif not IsResting() and isSetEquipped( heirloomSetId ) and restingSetTable.previousHeirloomSetId then
-        dbg:print("Left Rest Area, restore previous Set")
-        equipArmorSet( restingSetTable.previousHeirloomSetId )
-        restingSetTable.previousHeirloomSetId = nil
+    local restingName = config.restingSetName
+    if not restingName then
+        dbg:print("No resting set configured.")
+        return
+    end
+
+    local restingId, err = getEquipmentSetId(restingName)
+    if err then
+        dbg:print(err)
+        return
+    end
+
+    local equipped, err2 = isSetEquipped(restingId)
+    if err2 then
+        dbg:print(err2)
+        return
+    end
+
+    if IsResting() and not equipped then
+        dbg:print("Entered Rest Area → equipping resting set:", restingName)
+        state.resting.previousSetId = getEquippedSetId()
+        equipSet(restingId)
+
+    elseif not IsResting() and equipped and state.resting.previousSetId then
+        dbg:print("Left Rest Area → restoring previous set")
+        equipSet(state.resting.previousSetId)
+        state.resting.previousSetId = nil
     end
 end
 
--- Events that detect mounting/dismounting
+-----------------------------------------------------------------
+-- PUBLIC CONFIG API (called by future options UI)
+-----------------------------------------------------------------
+
+function auto:initializeConfig(restingSetName, questingSetName)
+    -- Validate resting set
+    if restingSetName then
+        local id, err = getEquipmentSetId(restingSetName)
+        if not id then
+            return false, err
+        end
+        config.restingSetName = restingSetName
+        state.resting.previousSetId = nil
+    end
+
+    -- Validate questing set
+    if questingSetName then
+        local id, err = getEquipmentSetId(questingSetName)
+        if not id then
+            return false, err
+        end
+        config.questingSetName = questingSetName
+        state.questing.previousSetId = nil
+    end
+
+    return true
+end
+
+-----------------------------------------------------------------
+-- EVENT HANDLERS
+-----------------------------------------------------------------
+
 eventFrame:RegisterEvent("ADDON_LOADED")
 eventFrame:RegisterEvent("PLAYER_UPDATE_RESTING")
 
--- Event dispatcher
-eventFrame:SetScript("OnEvent",
-function(self, event, ...)
-    local arg = {...}
+eventFrame:SetScript("OnEvent", function(self, event, ...)
+    local arg1 = ...
 
-    if event == "ADDON_LOADED" and arg[1] == addonName then
-        DEFAULT_CHAT_FRAME:AddMessage(L["ADDON_NAME_AND_VERSION"], 0, 1, 1)
+    if event == "ADDON_LOADED" and arg1 == ADDON_NAME then
 
-        restingSetTable.setId, errorMsg = getArmorSetId( "LOOMS" )
-        if not restingSetTable.setId then
-            DEFAULT_CHAT_FRAME:AddMessage(string.format("%s %s", dbg:prefix(), errorMsg ))
-            return
-        end
-        questingSetTable.setId, errorMsg = getArmorSetId( "PROT" )
-        if not restingSetTable.setId then
-            DEFAULT_CHAT_FRAME:AddMessage(string.format("%s %s", dbg:prefix(), errorMsg ))
-            return
+        -- Validate saved config (user may have deleted sets)
+        if config.restingSetName then
+            local id = C_EquipmentSet.GetEquipmentSetID(config.restingSetName)
+            if not id then
+                print("|cffff0000AutoEquip:|r Resting set no longer exists:", config.restingSetName)
+                config.restingSetName = nil
+            end
         end
 
-        
+        if config.questingSetName then
+            local id = C_EquipmentSet.GetEquipmentSetID(config.questingSetName)
+            if not id then
+                print("|cffff0000AutoEquip:|r Questing set no longer exists:", config.questingSetName)
+                config.questingSetName = nil
+            end
+        end
+
         eventFrame:UnregisterEvent("ADDON_LOADED")
         return
     end
-
-        -- handling this event is what the addon is all about
+    
     if event == "PLAYER_UPDATE_RESTING" then
         UpdateRestingState()
         return
     end
 end)
 
+AutoEquip.AutoEquip.loaded = true
 
-AutoEquip.loaded = true
-if core:debuggingIsEnabled() then
-    DEFAULT_CHAT_FRAME:AddMessage("AutoEquip.lua loaded", 0, 1, 0 )
-end
-
+-- if core:debuggingIsEnabled() then
+--     print( "AutoEquip.lua loaded" )
+-- end

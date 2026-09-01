@@ -1,15 +1,20 @@
+-----------------------------------------------------------------
+-- File: AutoEquip.lua
+-----------------------------------------------------------------
+-- Ensure SkillUp namespace exists
+local ADDON_NAME, _ = ...
+
 AutoEquip = AutoEquip or {}
 AutoEquip.Core = {}
 local core = AutoEquip.Core
 
-local ADDON_NAME = "AutoEquip"
 local addonVersion = C_AddOns.GetAddOnMetadata(ADDON_NAME, "Version") or "dev"
 
 -- ================================================================
 -- Addon Information
 -- ================================================================
 local function getExpansionName()
-    local expansionLevel = GetServerExpansionLevel()
+    local expansionLevel = GetExpansionLevel()
 
     local expansionNames = {
         [LE_EXPANSION_CLASSIC]                = "Classic",
@@ -25,8 +30,7 @@ local function getExpansionName()
         [LE_EXPANSION_WAR_WITHIN]             = "The War Within",
         [LE_EXPANSION_MIDNIGHT]               = "Midnight",
     }
-
-    return expansionNames[expansionLevel] or "Unknown Expansion"
+    return expansionNames[expansionLevel] or select(4, GetBuildInfo())
 end
 
 -- USAGE:

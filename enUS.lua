@@ -1,5 +1,8 @@
+-----------------------------------------------------------------
+-- File: enUS.lua
+-----------------------------------------------------------------
 AutoEquip = AutoEquip or {}
-AutoEquip.enUS = {}
+AutoEquip.enUS = AutoEquip.enUS or {}
 
 if not AutoEquip.Core.loaded then
 	DEFAULT_CHAT_FRAME:AddMessage("Core.lua failed to load", 1, 0, 0)
@@ -34,8 +37,9 @@ if LOCALE == "enUS" then
 end
 
 AutoEquip.enUS.loaded = true
+
 if core:debuggingIsEnabled() then
-	DEFAULT_CHAT_FRAME:AddMessage(string.format("enUS.lua loaded loaded"), 0, 1, 0)
+	DEFAULT_CHAT_FRAME:AddMessage("enUS.lua loaded", 0, 1, 0)
 end
 
 
