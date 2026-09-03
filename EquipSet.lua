@@ -50,14 +50,6 @@ local function equipSetById(setId)
     C_EquipmentSet.UseEquipmentSet(setId)
 end
 
-local function onPlayerUpdateResting()
-    if IsResting() then
-        equipSetById(savedVariables.restingSetId)
-    else
-        equipSetById(savedVariables.nonRestingSetId)
-    end
-end
-
 -----------------------------------------------------------------
 -- Gameplay events
 -----------------------------------------------------------------
@@ -68,7 +60,7 @@ eventFrame:SetScript(
     "OnEvent",
     function(_, event)
         if event == "PLAYER_UPDATE_RESTING" then
-            onPlayerUpdateResting()
+            equipSet:onPlayerUpdateResting()
         end
     end
 )
@@ -76,6 +68,22 @@ eventFrame:SetScript(
 -----------------------------------------------------------------
 -- Public functions
 -----------------------------------------------------------------
+
+function equipSet:setRestingSetId(setId)
+    savedVariables.restingSetId = setId
+end
+
+function equipSet:setNonRestingSetId(setId)
+    savedVariables.nonRestingSetId = setId
+end
+
+function equipSet:getRestingSetId()
+    return savedVariables.restingSetId
+end
+
+function equipSet:getNonRestingSetId()
+    return savedVariables.nonRestingSetId
+end
 
 function equipSet:initialize()
     if self.initialized then
@@ -107,6 +115,18 @@ function equipSet:initialize()
     end
 end
 
+function equipSet:onPlayerUpdateResting()
+    if not self.initialized then
+        return
+    end
+
+    if IsResting() then
+        equipSetById(savedVariables.restingSetId)
+    else
+        equipSetById(savedVariables.nonRestingSetId)
+    end
+end
+
 -- Returns the player's equipment sets for use by modules such
 -- as Options. Each entry contains the set name, ID, and icon.
 function equipSet:getEquipmentSets()
@@ -129,6 +149,10 @@ function equipSet:getEquipmentSets()
 
     return equipmentSets
 end
+
+-----------------------------------------------------------------
+-- Module state
+-----------------------------------------------------------------
 
 equipSet.loaded = true
 equipSet.initialized = false
