@@ -1,15 +1,17 @@
 -----------------------------------------------------------------
 -- File: MinimapButton.lua
 -----------------------------------------------------------------
+local ADDON_NAME, _ = ...
+local Filename = "MinimapButton.lua"
 
-AutoEquip = AutoEquip or {}
+AutoEquip = AutoEquip or {} 
 AutoEquip.MinimapButton = AutoEquip.MinimapButton or {}
 
 if not AutoEquip.DebugTools.loaded then
-    print("DebugTools.lua failed to load")
+    local failMsg = string.format("%s failed to load", "DebugTools.lua" )
+    print(failMsg) 
     return
 end
-
 
 local MB = AutoEquip.MinimapButton
 
@@ -22,7 +24,7 @@ local button
 -----------------------------------------------------------------
 -- Calculate position on minimap ring
 -----------------------------------------------------------------
-local function UpdatePosition(angle)
+local function UpdatePosition(angle) 
     local radius = 80
     local x = math.cos(angle) * radius
     local y = math.sin(angle) * radius
@@ -112,8 +114,8 @@ function MB:Create()
     UpdatePosition(angle)
 end
 
-    MB.loaded = true
     AutoEquip.MinimapButton.loaded = true
     if AutoEquip.Core:debuggingIsEnabled() then
-        print("MinimapButton.lua loaded")
+        local isLoadedStr = string.format("%s loaded", Filename)
+        print( isLoadedStr )
     end

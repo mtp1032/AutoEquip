@@ -1,12 +1,15 @@
 -----------------------------------------------------------------
 -- File: DebugTools.lua
 -----------------------------------------------------------------
+local ADDON_NAME, _ = ...
+local Filename = "DebugTools.lua"
 
 AutoEquip = AutoEquip or {}
 AutoEquip.DebugTools = AutoEquip.DebugTools or {}
 
 if not AutoEquip.enUS.loaded then
-    print("enUS.lua failed to load")
+    local failMsg = string.format("%s failed to load", "enUS.lua" )
+    print(failMsg) 
     return
 end
 
@@ -351,5 +354,6 @@ end
 
 AutoEquip.DebugTools.loaded = true
 if core:debuggingIsEnabled() then
-    print("DebugTools.lua loaded", 0, 1, 0)
+    local isLoadedStr = string.format("%s loaded", Filename)
+    print(isLoadedStr)
 end

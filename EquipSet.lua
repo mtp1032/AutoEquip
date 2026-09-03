@@ -1,9 +1,18 @@
-
-
+-----------------------------------------------------------------
 -- File: EquipSet.lua
+-----------------------------------------------------------------
+local ADDON_NAME, _ = ...
+local Filename = "EquipSet.lua"
+
 AutoEquip = AutoEquip or {}
 AutoEquip.EquipSet = AutoEquip.EquipSet or {}
 AutoEquip.Options = AutoEquip.Options or {}
+
+if not AutoEquip.MinimapButton.loaded then
+    local failMsg = string.format("%s failed to load", "MinimapButton.lua" )
+    print(failMsg)
+    return
+end
 
 local core = AutoEquip.Core
 local dbg = AutoEquip.DebugTools
@@ -92,7 +101,7 @@ function AutoEquip.EquipSet:Initialize()
 end
 
 -- Called when entering a rest area
-function AutoEquip.EquipSet:OnEnterRestArea()
+function AutoEquip.EquipSet:OnEnterRestArea() 
     equipSetByName(config.rest_area_set)
 end
 
@@ -119,6 +128,7 @@ end
 -- 
 AutoEquip.EquipSet.loaded = true
 if core:debuggingIsEnabled() then
-    dbg:print("EquipSet.lua loaded")
+    local isLoadedStr = string.format("%s loaded", Filename)
+    print(isLoadedStr)
 end
 

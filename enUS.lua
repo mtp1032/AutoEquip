@@ -1,13 +1,18 @@
 -----------------------------------------------------------------
 -- File: enUS.lua
 -----------------------------------------------------------------
-AutoEquip = AutoEquip or {}
-AutoEquip.enUS = AutoEquip.enUS or {}
+local ADDON_NAME, _ = ...
+local Filename = "enUS.lua"
 
+AutoEquip = AutoEquip or {} 
+AutoEquip.enUS = AutoEquip.enUS or {}
+ 
 if not AutoEquip.Core.loaded then
 	print("Core.lua failed to load", 1, 0, 0)
     return
 end
+local Filename = "enUS.lua"
+local isLoadedStr = string.format("%s loaded", Filename)
 
 local core = AutoEquip.Core
 
@@ -38,7 +43,7 @@ end
 
 AutoEquip.enUS.loaded = true
 if core:debuggingIsEnabled() then 
-	print("enUS.lua loaded")
+	print(isLoadedStr)
 end
 
 

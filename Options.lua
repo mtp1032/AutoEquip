@@ -1,15 +1,19 @@
 -----------------------------------------------------------------
--- File: Options.lua (Fully Rebuilt + Premium Highlight System)
+-- File: Options.lua
 -----------------------------------------------------------------
+ADDON_NAME, _ = ...
+local Filename = "Options.lua"
 
 AutoEquip = AutoEquip or {}
 AutoEquip.Options = AutoEquip.Options or {} 
 
 if not AutoEquip.EquipSet.loaded then
-    print("EquipSet.lua not loaded")
+    local failMsg = string.format("%s failed to load", "EquipSet.lua" )
+    print(failMsg)
     return
 end
 
+-- Shortcut references
 local core  = AutoEquip.Core 
 local dbg   = AutoEquip.DebugTools
 local L     = AutoEquip.enUS.L
@@ -124,7 +128,6 @@ end
 -----------------------------------------------------------------
 
 local function CreateSetButton(parent, setName, iconTexture, yOffset, labelText)
-    dbg:print("Creating button for set:", setName, "at yOffset:", yOffset)
 
     local btn = CreateFrame("Button", nil, parent)
     btn:SetSize(40, 40)
@@ -295,11 +298,9 @@ local function BuildEquipSetsTab(parent)
     local sets = getEquipmentSetNameTable()
     local y    = -10
 
-    dbg:print("Building Equipment Sets tab with", #sets, "unique sets.")
     for i = 1, #sets do
         local name = sets[i].name
         local icon = sets[i].icon
-        dbg:print("Adding set:", name, "with icon:", icon, "at yOffset:", y)
 
         -- Resting Set Button
         local restingBtn = CreateSetButton(content, name, icon, y, "Resting Set")
@@ -440,5 +441,6 @@ end
 -----------------------------------------------------------------
 AutoEquip.Options.loaded = true
 if core:debuggingIsEnabled() then
-    print("Options.lua loaded (rebuilt UI + premium highlights)")
+    local isLoadedStr = string.format("%s loaded", Filename)
+    print(isLoadedStr)
 end

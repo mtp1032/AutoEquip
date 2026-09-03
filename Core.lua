@@ -3,6 +3,7 @@
 -----------------------------------------------------------------
 -- Ensure SkillUp namespace exists
 local ADDON_NAME, _ = ...
+local Filename = "Core.lua"
 
 AutoEquip = AutoEquip or {}
 AutoEquip.Core = {}
@@ -34,21 +35,19 @@ local function getExpansionName()
     return expansionNames[expansionLevel] or select(4, GetBuildInfo())
 end
 
--- USAGE:
--- local addonName, addonVersion, expansionName = core:getAddonInfo()
--- AutoEquip, 0.0.1 (Midnight)
-
+-- USAGE: local addonName, addonVersion, expansionName = core:getAddonInfo()
+-- RETURNS: AutoEquip, 0.0.1 (Midnight)
 function core:getAddonInfo()
     local expansionName = getExpansionName()
-    return ADDON_NAME, addonVersion, expansionName
+    return ADDON_NAME, addonVersion, expansionName 
 end
 
 -- ================================================================
--- Debug System
+-- Debugging
 -- ================================================================
 local DEBUGGING_ENABLED = true
 
-function core:debuggingIsEnabled()
+function core:debuggingIsEnabled() 
     return DEBUGGING_ENABLED or (AutoEquip.DEBUGGING == true)
 end
 function core:enableDebugging()
@@ -62,7 +61,7 @@ end
 
 -- Mark as loaded
 AutoEquip.Core.loaded = true
--- Load message
 if AutoEquip.Core and AutoEquip.Core:debuggingIsEnabled() then
-    print("core.lua loaded")
+    local isLoadedStr = string.format("%s loaded", Filename)
+    print(isLoadedStr)
 end
