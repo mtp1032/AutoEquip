@@ -4,7 +4,6 @@
 ## X-MAJOR: 0
 ## X-MINOR: 1
 ## X-PATCH: 0
-## Version: 0.1.0
 ## SavedVariables: 
 ## SavedVariablesPerCharacter: AUTOEQUIP_SAVED_VARS_DB 
 ## IconTexture: 894556
@@ -12,8 +11,9 @@
 Core.lua
 EnUS.lua
 DebugTools.lua
+DebugWindow.lua
 MinimapButton.lua
-EquipSet.lua
-Options.lua
+## EquipSet.lua
+## Options.lua
 
 

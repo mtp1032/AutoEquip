@@ -1,50 +1,48 @@
 -----------------------------------------------------------------
 -- File: enUS.lua
 -----------------------------------------------------------------
-local ADDON_NAME, _ = ...
-local Filename = "enUS.lua"
 
-AutoEquip = AutoEquip or {} 
-AutoEquip.enUS = AutoEquip.enUS or {}
- 
-if not AutoEquip.Core.loaded then
-	print("Core.lua failed to load", 1, 0, 0)
+local _, AutoEquip = ...
+
+local fileName = "enUS.lua"
+
+if not AutoEquip.Core or not AutoEquip.Core.loaded then
+    print("Core.lua failed to load")
     return
 end
-local Filename = "enUS.lua"
-local isLoadedStr = string.format("%s loaded", Filename)
 
 local core = AutoEquip.Core
 
-local ADDON_NAME, version, addonExpansion = core:getAddonInfo()
-
-local MAJOR = C_AddOns.GetAddOnMetadata(ADDON_NAME, "X-MAJOR")
-local MINOR = C_AddOns.GetAddOnMetadata(ADDON_NAME, "X-MINOR")
-local PATCH = C_AddOns.GetAddOnMetadata(ADDON_NAME, "X-PATCH")
-
-local addonVersion = string.format("%s.%s.%s", MAJOR, MINOR, PATCH)
+local addonName, addonVersion, addonExpansion = core:getAddonInfo()
 
 local L = setmetatable({}, {
-	__index = function(t, k)
-		local v = tostring(k)
-		rawset(t, k, v)
-		return v
-	end
+    __index = function(localizationTable, key)
+        local value = tostring(key)
+        rawset(localizationTable, key, value)
+        return value
+    end,
 })
-AutoEquip.enUS.L = L
 
-local LOCALE = GetLocale() -- BLIZZ
-if LOCALE == "enUS" then
-	L["ADDON_NAME_AND_VERSION"] = string.format("%s version %s (%s) loaded.", ADDON_NAME, addonVersion, addonExpansion)
+AutoEquip.L = L
 
-	L["UNKNOWN_EQUIPMENT_SET_NAME"] = string.format("Unknown equipment set name. Please check and try again.")
-	L["UNKNOWN_EQUIPMENT_SET_ID"] 	= string.format("Unknown equipment set Id. Please check and try again.")
+L["ADDON_NAME_AND_VERSION"] =
+    string.format(
+        "%s version %s (%s) loaded.",
+        addonName,
+        addonVersion,
+        addonExpansion
+    )
+
+L["UNKNOWN_EQUIPMENT_SET_NAME"] =
+    "Unknown equipment set name. Please check and try again."
+
+L["UNKNOWN_EQUIPMENT_SET_ID"] =
+    "Unknown equipment set ID. Please check and try again."
+
+AutoEquip.Localization = {
+    loaded = true,
+}
+
+if core:isDebuggingEnabled() then
+    print(fileName .. " loaded")
 end
-
-AutoEquip.enUS.loaded = true
-if core:debuggingIsEnabled() then 
-	print(isLoadedStr)
-end
-
-
-

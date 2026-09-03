@@ -1,121 +1,196 @@
 -----------------------------------------------------------------
 -- File: MinimapButton.lua
 -----------------------------------------------------------------
-local ADDON_NAME, _ = ...
-local Filename = "MinimapButton.lua"
 
-AutoEquip = AutoEquip or {} 
-AutoEquip.MinimapButton = AutoEquip.MinimapButton or {}
+local _, AutoEquip = ...
 
-if not AutoEquip.DebugTools.loaded then
-    local failMsg = string.format("%s failed to load", "DebugTools.lua" )
-    print(failMsg) 
+local fileName = "MinimapButton.lua"
+
+if not AutoEquip.Core or not AutoEquip.Core.loaded then
+    print("Core.lua failed to load")
     return
 end
 
-local MB = AutoEquip.MinimapButton
+local core = AutoEquip.Core
 
--- Saved position
--- AUTOEQUIP_SAVED_VARS_DB.minimap = AUTOEQUIP_SAVED_VARS_DB.minimap or {}
--- local saved = AUTOEQUIP_SAVED_VARS_DB.minimap
+local minimapButton = {}
+AutoEquip.MinimapButton = minimapButton
+
+local MINIMAP_RADIUS = 80
+local ICON_TEXTURE = 894556
 
 local button
+local savedVariables
 
------------------------------------------------------------------
--- Calculate position on minimap ring
------------------------------------------------------------------
-local function UpdatePosition(angle) 
-    local radius = 80
-    local x = math.cos(angle) * radius
-    local y = math.sin(angle) * radius
+local function updatePosition()
+    if not button or not savedVariables then
+        return
+    end
 
+    local angle = savedVariables.angle or 0
+
+    local radians = math.rad(angle)
+
+    local x = math.cos(radians) * MINIMAP_RADIUS
+    local y = math.sin(radians) * MINIMAP_RADIUS
+
+    button:ClearAllPoints()
     button:SetPoint("CENTER", Minimap, "CENTER", x, y)
 end
 
------------------------------------------------------------------
--- Dragging logic
------------------------------------------------------------------
-local function OnDragStart(self)
-    self.isDragging = true
-    self:StartMoving()
+local function updateAngleFromCursor()
+    if not savedVariables then
+        return
+    end
+
+    local minimapX, minimapY = Minimap:GetCenter()
+    local cursorX, cursorY = GetCursorPosition()
+
+    local scale = UIParent:GetEffectiveScale()
+
+    cursorX = cursorX / scale
+    cursorY = cursorY / scale
+
+    local angle =
+        math.deg(
+            math.atan2(
+                cursorY - minimapY,
+                cursorX - minimapX
+            )
+        )
+
+    savedVariables.angle = angle
+
+    updatePosition()
 end
 
-local function OnDragStop(self)
-    self.isDragging = false
-    self:StopMovingOrSizing()
-
-    -- Convert position to angle
-    local mx, my = Minimap:GetCenter()
-    local bx, by = self:GetCenter()
-
-    local angle = math.atan2(by - my, bx - mx)
-    saved.angle = angle
-
-    UpdatePosition(angle)
+local function onDragStart(self)
+    self:SetScript("OnUpdate", updateAngleFromCursor)
 end
 
------------------------------------------------------------------
--- Create minimap button
------------------------------------------------------------------
-function MB:Create()
-    if button then return end
+local function onDragStop(self)
+    self:SetScript("OnUpdate", nil)
 
-    button = CreateFrame("Button", "AutoEquipMinimapButton", Minimap)
+    updateAngleFromCursor()
+end
+
+local function showTooltip(self)
+    GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+
+    GameTooltip:AddLine("AutoEquip")
+    GameTooltip:AddLine("Click to open AutoEquip options.", 1, 1, 1)
+
+    GameTooltip:Show()
+end
+
+local function hideTooltip()
+    GameTooltip:Hide()
+end
+
+local function openOptions()
+    Settings.OpenToCategory("AutoEquip")
+end
+
+local function createButton()
+    if button then
+        return
+    end
+
+    button =
+        CreateFrame(
+            "Button",
+            "AutoEquipMinimapButton",
+            Minimap
+        )
+
     button:SetSize(32, 32)
-    button:SetMovable(true)
+    button:SetFrameStrata("MEDIUM")
+    button:SetFrameLevel(8)
+
+    button:RegisterForClicks("LeftButtonUp")
     button:RegisterForDrag("LeftButton")
 
-    -------------------------------------------------------------
-    -- Icon
-    -------------------------------------------------------------
-    local icon = button:CreateTexture(nil, "ARTWORK")
-    icon:SetTexture(894556)  -- your TOC IconTexture
-    icon:SetAllPoints()
+    local background =
+        button:CreateTexture(
+            nil,
+            "BACKGROUND"
+        )
 
-    -------------------------------------------------------------
-    -- Border (Blizzard standard)
-    -------------------------------------------------------------
-    local border = button:CreateTexture(nil, "OVERLAY")
-    border:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
-    border:SetSize(56, 56)
-    border:SetPoint("CENTER")
+    background:SetSize(20, 20)
+    background:SetPoint("CENTER")
+    background:SetTexture(
+        "Interface\\Minimap\\UI-Minimap-Background"
+    )
 
-    -------------------------------------------------------------
-    -- Dragging
-    -------------------------------------------------------------
-    button:SetScript("OnDragStart", OnDragStart)
-    button:SetScript("OnDragStop", OnDragStop)
+    local icon =
+        button:CreateTexture(
+            nil,
+            "ARTWORK"
+        )
 
-    -------------------------------------------------------------
-    -- Tooltip
-    -------------------------------------------------------------
-    button:SetScript("OnEnter", function(self)
-        GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-        GameTooltip:SetText("AutoEquip")
-        GameTooltip:AddLine("Click to open AutoEquip options", 1, 1, 1)
-        GameTooltip:Show()
-    end)
+    icon:SetSize(18, 18)
+    icon:SetPoint("CENTER")
+    icon:SetTexture(ICON_TEXTURE)
+    icon:SetTexCoord(
+        0.08,
+        0.92,
+        0.08,
+        0.92
+    )
 
-    button:SetScript("OnLeave", function() 
-        GameTooltip:Hide()
-    end)
+    local border =
+        button:CreateTexture(
+            nil,
+            "OVERLAY"
+        )
 
-    -------------------------------------------------------------
-    -- Click action (only opens Options)
-    -------------------------------------------------------------
-    button:SetScript("OnClick", function(self, btn)
-        Settings.OpenToCategory("AutoEquip")
-    end)
+    border:SetSize(54, 54)
+    border:SetPoint("TOPLEFT")
+    border:SetTexture(
+        "Interface\\Minimap\\MiniMap-TrackingBorder"
+    )
 
-    -------------------------------------------------------------
-    -- Initial position
-    -------------------------------------------------------------
-    local angle = saved.angle or math.rad(45)
-    UpdatePosition(angle)
+    button:SetScript("OnClick", openOptions)
+    button:SetScript("OnDragStart", onDragStart)
+    button:SetScript("OnDragStop", onDragStop)
+    button:SetScript("OnEnter", showTooltip)
+    button:SetScript("OnLeave", hideTooltip)
+
+    updatePosition()
 end
 
-    AutoEquip.MinimapButton.loaded = true
-    if AutoEquip.Core:debuggingIsEnabled() then
-        local isLoadedStr = string.format("%s loaded", Filename)
-        print( isLoadedStr )
+function minimapButton:initialize()
+    if self.initialized then
+        return
     end
+
+    if not core.initialized then
+        error(
+            "MinimapButton cannot initialize before Core initialization."
+        )
+    end
+
+    AUTOEQUIP_SAVED_VARS_DB.minimap =
+        AUTOEQUIP_SAVED_VARS_DB.minimap or {}
+
+    savedVariables =
+        AUTOEQUIP_SAVED_VARS_DB.minimap
+
+    createButton()
+
+    self.initialized = true
+
+    if core:isDebuggingEnabled()
+        and AutoEquip.DebugTools
+        and AutoEquip.DebugTools.loaded
+    then
+        AutoEquip.DebugTools:print(
+            fileName .. " initialized"
+        )
+    end
+end
+
+minimapButton.loaded = true
+if core:isDebuggingEnabled() then
+    print(fileName .. " loaded")
+end

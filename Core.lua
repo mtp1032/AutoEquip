@@ -1,67 +1,102 @@
 -----------------------------------------------------------------
--- File: AutoEquip.lua
+-- File: Core.lua
 -----------------------------------------------------------------
--- Ensure SkillUp namespace exists
-local ADDON_NAME, _ = ...
-local Filename = "Core.lua"
 
-AutoEquip = AutoEquip or {}
-AutoEquip.Core = {}
+local addonName, AutoEquip = ...
 
-local core = AutoEquip.Core
+local fileName = "Core.lua"
+local debuggingEnabled = true
 
-local addonVersion = C_AddOns.GetAddOnMetadata(ADDON_NAME, "Version") or "dev"
+local core = {}
+AutoEquip.Core = core
 
--- ================================================================
--- Addon Information
--- ================================================================
+local EXPANSION_NAMES = {
+    [LE_EXPANSION_CLASSIC] = "Classic",
+    [LE_EXPANSION_BURNING_CRUSADE] = "Burning Crusade",
+    [LE_EXPANSION_WRATH_OF_THE_LICH_KING] = "Wrath of the Lich King",
+    [LE_EXPANSION_CATACLYSM] = "Cataclysm",
+    [LE_EXPANSION_MISTS_OF_PANDARIA] = "Mists of Pandaria",
+    [LE_EXPANSION_WARLORDS_OF_DRAENOR] = "Warlords of Draenor",
+    [LE_EXPANSION_LEGION] = "Legion",
+    [LE_EXPANSION_BATTLE_FOR_AZEROTH] = "Battle for Azeroth",
+    [LE_EXPANSION_SHADOWLANDS] = "Shadowlands",
+    [LE_EXPANSION_DRAGONFLIGHT] = "Dragonflight",
+    [LE_EXPANSION_WAR_WITHIN] = "The War Within",
+    [LE_EXPANSION_MIDNIGHT] = "Midnight",
+}
+
+-- Get addon version`
+local major =
+    C_AddOns.GetAddOnMetadata(addonName, "X-MAJOR") or "0"
+local minor =
+    C_AddOns.GetAddOnMetadata(addonName, "X-MINOR") or "0"
+local patch =
+    C_AddOns.GetAddOnMetadata(addonName, "X-PATCH") or "0"
+local addonVersion =
+    string.format("%s.%s.%s", major, minor, patch)
+
 local function getExpansionName()
     local expansionLevel = GetExpansionLevel()
-
-    local expansionNames = {
-        [LE_EXPANSION_CLASSIC]                = "Classic",
-        [LE_EXPANSION_BURNING_CRUSADE]        = "Burning Crusade",
-        [LE_EXPANSION_WRATH_OF_THE_LICH_KING] = "Wrath of the Lich King",
-        [LE_EXPANSION_CATACLYSM]              = "Cataclysm",
-        [LE_EXPANSION_MISTS_OF_PANDARIA]      = "Mists of Pandaria",
-        [LE_EXPANSION_WARLORDS_OF_DRAENOR]    = "Warlords of Draenor",
-        [LE_EXPANSION_LEGION]                 = "Legion",
-        [LE_EXPANSION_BATTLE_FOR_AZEROTH]     = "Battle for Azeroth",
-        [LE_EXPANSION_SHADOWLANDS]            = "Shadowlands",
-        [LE_EXPANSION_DRAGONFLIGHT]           = "Dragonflight",
-        [LE_EXPANSION_WAR_WITHIN]             = "The War Within",
-        [LE_EXPANSION_MIDNIGHT]               = "Midnight",
-    }
-    return expansionNames[expansionLevel] or select(4, GetBuildInfo())
+    return EXPANSION_NAMES[expansionLevel]
+        or select(4, GetBuildInfo())
 end
 
--- USAGE: local addonName, addonVersion, expansionName = core:getAddonInfo()
--- RETURNS: AutoEquip, 0.0.1 (Midnight)
 function core:getAddonInfo()
-    local expansionName = getExpansionName()
-    return ADDON_NAME, addonVersion, expansionName 
+    return addonName, addonVersion, getExpansionName()
 end
 
--- ================================================================
--- Debugging
--- ================================================================
-local DEBUGGING_ENABLED = true
-
-function core:debuggingIsEnabled() 
-    return DEBUGGING_ENABLED or (AutoEquip.DEBUGGING == true)
+function core:isDebuggingEnabled()
+    return debuggingEnabled
 end
+
 function core:enableDebugging()
-    DEBUGGING_ENABLED = true
-    -print("Debug mode enabled")
+    debuggingEnabled = true
+    print("Debug mode enabled")
 end
+
 function core:disableDebugging()
-    DEBUGGING_ENABLED = false
+    debuggingEnabled = false
     print("Debug mode disabled")
 end
 
--- Mark as loaded
-AutoEquip.Core.loaded = true
-if AutoEquip.Core and AutoEquip.Core:debuggingIsEnabled() then
-    local isLoadedStr = string.format("%s loaded", Filename)
-    print(isLoadedStr)
+-----------------------------------------------------------------
+-- Addon initialization
+-----------------------------------------------------------------
+local eventFrame = CreateFrame("Frame")
+
+eventFrame:RegisterEvent("ADDON_LOADED")
+
+eventFrame:SetScript("OnEvent", function(self, event, loadedAddonName)
+    if loadedAddonName ~= addonName then
+        return
+    end
+
+   AUTOEQUIP_SAVED_VARS_DB =
+    AUTOEQUIP_SAVED_VARS_DB or {}
+
+core.initialized = true
+
+if AutoEquip.MinimapButton
+    and AutoEquip.MinimapButton.loaded
+then
+    AutoEquip.MinimapButton:initialize()
+end
+
+if AutoEquip.L then
+    print(AutoEquip.L["ADDON_NAME_AND_VERSION"])
+end
+
+    self:UnregisterEvent("ADDON_LOADED")
+end)
+
+core.loaded = true
+
+if core:isDebuggingEnabled() then
+    print(fileName .. " loaded")
+end
+
+core.loaded = true
+
+if core:isDebuggingEnabled() then
+    print(fileName .. " loaded")
 end
