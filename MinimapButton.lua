@@ -86,9 +86,17 @@ end
 local function hideTooltip()
     GameTooltip:Hide()
 end
-
 local function openOptions()
-    Settings.OpenToCategory("AutoEquip")
+    AutoEquip.DebugTools:print( "Entered openOptions()")
+    if AutoEquip.Options
+        and AutoEquip.Options.loaded
+        and AutoEquip.Options.initialized
+    then
+        AutoEquip.DebugTools:print()
+        AutoEquip.Options:open()
+    end
+    AutoEquip.DebugTools:print()
+
 end
 
 local function createButton()
@@ -149,13 +157,18 @@ local function createButton()
     border:SetTexture(
         "Interface\\Minimap\\MiniMap-TrackingBorder"
     )
-
+    AutoEquip.DebugTools:print()
     button:SetScript("OnClick", openOptions)
+    AutoEquip.DebugTools:print()
     button:SetScript("OnDragStart", onDragStart)
+    AutoEquip.DebugTools:print()
     button:SetScript("OnDragStop", onDragStop)
+    AutoEquip.DebugTools:print()
     button:SetScript("OnEnter", showTooltip)
+    AutoEquip.DebugTools:print()
     button:SetScript("OnLeave", hideTooltip)
 
+    AutoEquip.DebugTools:print()
     updatePosition()
 end
 

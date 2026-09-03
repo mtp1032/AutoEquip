@@ -88,7 +88,14 @@ local function initializeModules()
     then
         AutoEquip.EquipSet:initialize()
     end
-end-----------------------------------------------------------------
+
+    if AutoEquip.Options
+        and AutoEquip.Options.loaded
+    then
+        AutoEquip.Options:initialize()
+    end
+end
+-----------------------------------------------------------------
 -- Public functions
 -----------------------------------------------------------------
 
