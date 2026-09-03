@@ -6,6 +6,7 @@ local ADDON_NAME, _ = ...
 
 AutoEquip = AutoEquip or {}
 AutoEquip.Core = {}
+
 local core = AutoEquip.Core
 
 local addonVersion = C_AddOns.GetAddOnMetadata(ADDON_NAME, "Version") or "dev"
@@ -63,5 +64,5 @@ end
 AutoEquip.Core.loaded = true
 -- Load message
 if AutoEquip.Core and AutoEquip.Core:debuggingIsEnabled() then
-    print("core.lua loaded", 0, 1, 0)
+    print("core.lua loaded")
 end

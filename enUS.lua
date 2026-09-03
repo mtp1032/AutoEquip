@@ -37,9 +37,8 @@ if LOCALE == "enUS" then
 end
 
 AutoEquip.enUS.loaded = true
-
-if core:debuggingIsEnabled() then
-	print("enUS.lua loaded", 0, 1, 0)
+if core:debuggingIsEnabled() then 
+	print("enUS.lua loaded")
 end
 
 

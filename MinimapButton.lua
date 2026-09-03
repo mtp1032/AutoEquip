@@ -5,7 +5,7 @@
 AutoEquip = AutoEquip or {}
 AutoEquip.MinimapButton = AutoEquip.MinimapButton or {}
 
-if not AutoEquip.DebugTools then
+if not AutoEquip.DebugTools.loaded then
     print("DebugTools.lua failed to load")
     return
 end
@@ -14,8 +14,8 @@ end
 local MB = AutoEquip.MinimapButton
 
 -- Saved position
-AUTOEQUIP_SAVED_VARS_DB.minimap = AUTOEQUIP_SAVED_VARS_DB.minimap or {}
-local saved = AUTOEQUIP_SAVED_VARS_DB.minimap
+-- AUTOEQUIP_SAVED_VARS_DB.minimap = AUTOEQUIP_SAVED_VARS_DB.minimap or {}
+-- local saved = AUTOEQUIP_SAVED_VARS_DB.minimap
 
 local button
 
@@ -94,7 +94,7 @@ function MB:Create()
         GameTooltip:Show()
     end)
 
-    button:SetScript("OnLeave", function()
+    button:SetScript("OnLeave", function() 
         GameTooltip:Hide()
     end)
 
@@ -110,10 +110,10 @@ function MB:Create()
     -------------------------------------------------------------
     local angle = saved.angle or math.rad(45)
     UpdatePosition(angle)
+end
 
     MB.loaded = true
     AutoEquip.MinimapButton.loaded = true
-    if core:debuggingIsEnabled() then
+    if AutoEquip.Core:debuggingIsEnabled() then
         print("MinimapButton.lua loaded")
     end
-end

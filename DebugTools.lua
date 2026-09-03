@@ -1,9 +1,9 @@
 -----------------------------------------------------------------
--- File: DebugWindow.lua
+-- File: DebugTools.lua
 -----------------------------------------------------------------
 
 AutoEquip = AutoEquip or {}
-AutoEquip.DebugWindow = AutoEquip.DebugWindow or {}
+AutoEquip.DebugTools = AutoEquip.DebugTools or {}
 
 if not AutoEquip.enUS.loaded then
     print("enUS.lua failed to load")
@@ -12,7 +12,7 @@ end
 
 local core  = AutoEquip.Core
 local L     = AutoEquip.enUS.L
-local dbg   = AutoEquip.DebugWindow
+local dbg   = AutoEquip.DebugTools
 
 -- ADDON_NAME for ADDON_LOADED
 local ADDON_NAME = ...
@@ -46,7 +46,7 @@ end)
 -- PREFIX / STACK TRACE
 -----------------------------------------------------------------
 
-function dbg:prefix(stackTrace)
+local function prefix(stackTrace)
     stackTrace = stackTrace or debugstack(3)
 
     local fileName, lineNumber = stackTrace:match("[\\/]([^\\/:]+):(%d+)")
@@ -62,6 +62,7 @@ end
 -----------------------------------------------------------------
 
 function dbg:print(...)
+    local prefixStr = prefix(debugstack(2))
     local args = { ... }
     local out = {}
 
@@ -78,8 +79,11 @@ function dbg:print(...)
     end
 
     local msg = table.concat(out, " ")
+    msg = prefixStr .. msg
+    print(msg)
     self:Append(msg)
 end
+
 function dbg:enable()
     core:enableDebugging()
     return true
@@ -193,7 +197,7 @@ function dbg:Create()
     -------------------------------------------------------------
     -- Main Frame
     -------------------------------------------------------------
-    frame = CreateFrame("Frame", "AutoEquipDebugWindow", UIParent, "BackdropTemplate")
+    frame = CreateFrame("Frame", "AutoEquipDebugTools", UIParent, "BackdropTemplate")
     frame:SetSize(initWidth, initHeight)
     frame:SetFrameStrata("DIALOG")
 
@@ -345,7 +349,7 @@ end
 -- Loaded flag
 -----------------------------------------------------------------
 
-AutoEquip.DebugWindow.loaded = true
+AutoEquip.DebugTools.loaded = true
 if core:debuggingIsEnabled() then
-    print("DebugWindow.lua loaded", 0, 1, 0)
+    print("DebugTools.lua loaded", 0, 1, 0)
 end
