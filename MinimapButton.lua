@@ -4,7 +4,7 @@
 
 local _, AutoEquip = ...
 
-local fileName = "MinimapButton.lua"
+local fileName = "MinimapButton.lua" 
 
 if not AutoEquip.Core or not AutoEquip.Core.loaded then
     print("Core.lua failed to load")

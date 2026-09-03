@@ -13,7 +13,7 @@ EnUS.lua
 DebugTools.lua
 DebugWindow.lua
 MinimapButton.lua
-## EquipSet.lua
+EquipSet.lua
 ## Options.lua
 
 

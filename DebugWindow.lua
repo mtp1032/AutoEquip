@@ -2,11 +2,18 @@
 -- File: DebugWindow.lua
 -----------------------------------------------------------------
 
-local addonName, AutoEquip = ...
+local _, AutoEquip = ...
 
 local fileName = "DebugWindow.lua"
 
-if not AutoEquip.DebugTools or not AutoEquip.DebugTools.loaded then
+if not AutoEquip.Core or not AutoEquip.Core.loaded then
+    print("Core.lua failed to load")
+    return
+end
+
+if not AutoEquip.DebugTools
+    or not AutoEquip.DebugTools.loaded
+then
     print("DebugTools.lua failed to load")
     return
 end
@@ -33,6 +40,10 @@ local textArea
 local copyPopup
 local copyEditBox
 local savedVariables
+
+-----------------------------------------------------------------
+-- Private functions
+-----------------------------------------------------------------
 
 local function savePosition()
     if not frame or not savedVariables then
@@ -98,7 +109,12 @@ local function createCopyPopup()
         },
     })
 
-    copyEditBox = CreateFrame("EditBox", nil, copyPopup)
+    copyEditBox =
+        CreateFrame(
+            "EditBox",
+            nil,
+            copyPopup
+        )
 
     copyEditBox:SetMultiLine(true)
     copyEditBox:SetMaxLetters(99999)
@@ -118,9 +134,12 @@ local function createCopyPopup()
     closeButton:SetPoint("BOTTOM", 0, 16)
     closeButton:SetText("Close")
 
-    closeButton:SetScript("OnClick", function()
-        copyPopup:Hide()
-    end)
+    closeButton:SetScript(
+        "OnClick",
+        function()
+            copyPopup:Hide()
+        end
+    )
 end
 
 local function showCopyPopup()
@@ -189,14 +208,20 @@ local function createWindow()
     frame:SetMovable(true)
     frame:RegisterForDrag("LeftButton")
 
-    frame:SetScript("OnDragStart", function()
-        frame:StartMoving()
-    end)
+    frame:SetScript(
+        "OnDragStart",
+        function()
+            frame:StartMoving()
+        end
+    )
 
-    frame:SetScript("OnDragStop", function()
-        frame:StopMovingOrSizing()
-        savePosition()
-    end)
+    frame:SetScript(
+        "OnDragStop",
+        function()
+            frame:StopMovingOrSizing()
+            savePosition()
+        end
+    )
 
     local title =
         frame:CreateFontString(
@@ -218,9 +243,12 @@ local function createWindow()
 
     closeButton:SetPoint("TOPRIGHT", -6, -6)
 
-    closeButton:SetScript("OnClick", function()
-        debugWindow:hide()
-    end)
+    closeButton:SetScript(
+        "OnClick",
+        function()
+            debugWindow:hide()
+        end
+    )
 
     frame:SetResizable(true)
 
@@ -232,7 +260,11 @@ local function createWindow()
     )
 
     local resizeHandle =
-        CreateFrame("Button", nil, frame)
+        CreateFrame(
+            "Button",
+            nil,
+            frame
+        )
 
     resizeHandle:SetPoint("BOTTOMRIGHT", -6, 6)
     resizeHandle:SetSize(16, 16)
@@ -249,20 +281,27 @@ local function createWindow()
         "Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Down"
     )
 
-    resizeHandle:SetScript("OnMouseDown", function()
-        frame:StartSizing("BOTTOMRIGHT")
-    end)
+    resizeHandle:SetScript(
+        "OnMouseDown",
+        function()
+            frame:StartSizing("BOTTOMRIGHT")
+        end
+    )
 
-    resizeHandle:SetScript("OnMouseUp", function()
-        frame:StopMovingOrSizing()
-        saveSize()
+    resizeHandle:SetScript(
+        "OnMouseUp",
+        function()
+            frame:StopMovingOrSizing()
 
-        textArea:SetWidth(
-            scrollFrame:GetWidth() - 20
-        )
+            saveSize()
 
-        updateDisplay()
-    end)
+            textArea:SetWidth(
+                scrollFrame:GetWidth() - 20
+            )
+
+            updateDisplay()
+        end
+    )
 
     scrollFrame =
         CreateFrame(
@@ -272,10 +311,22 @@ local function createWindow()
             "UIPanelScrollFrameTemplate"
         )
 
-    scrollFrame:SetPoint("TOPLEFT", 16, -40)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -30, 50)
+    scrollFrame:SetPoint(
+        "TOPLEFT",
+        16,
+        -40
+    )
 
-    scrollChild = CreateFrame("Frame")
+    scrollFrame:SetPoint(
+        "BOTTOMRIGHT",
+        -30,
+        50
+    )
+
+    scrollChild =
+        CreateFrame(
+            "Frame"
+        )
 
     scrollChild:SetSize(1, 1)
     scrollFrame:SetScrollChild(scrollChild)
@@ -290,7 +341,9 @@ local function createWindow()
     textArea:SetPoint("TOPLEFT")
     textArea:SetJustifyH("LEFT")
     textArea:SetJustifyV("TOP")
-    textArea:SetWidth(scrollFrame:GetWidth() - 20)
+    textArea:SetWidth(
+        scrollFrame:GetWidth() - 20
+    )
     textArea:SetWordWrap(true)
 
     local exitButton =
@@ -302,14 +355,21 @@ local function createWindow()
         )
 
     exitButton:SetSize(80, 24)
-    exitButton:SetPoint("BOTTOMLEFT", 16, 16)
+    exitButton:SetPoint(
+        "BOTTOMLEFT",
+        16,
+        16
+    )
     exitButton:SetText("Exit")
 
-    exitButton:SetScript("OnClick", function()
-        dbg:clear()
-        updateDisplay()
-        debugWindow:hide()
-    end)
+    exitButton:SetScript(
+        "OnClick",
+        function()
+            dbg:clear()
+            updateDisplay()
+            debugWindow:hide()
+        end
+    )
 
     local clearButton =
         CreateFrame(
@@ -320,13 +380,20 @@ local function createWindow()
         )
 
     clearButton:SetSize(80, 24)
-    clearButton:SetPoint("BOTTOMRIGHT", -16, 16)
+    clearButton:SetPoint(
+        "BOTTOMRIGHT",
+        -16,
+        16
+    )
     clearButton:SetText("Clear")
 
-    clearButton:SetScript("OnClick", function()
-        dbg:clear()
-        updateDisplay()
-    end)
+    clearButton:SetScript(
+        "OnClick",
+        function()
+            dbg:clear()
+            updateDisplay()
+        end
+    )
 
     local copyButton =
         CreateFrame(
@@ -337,14 +404,61 @@ local function createWindow()
         )
 
     copyButton:SetSize(80, 24)
-    copyButton:SetPoint("BOTTOM", 0, 16)
+    copyButton:SetPoint(
+        "BOTTOM",
+        0,
+        16
+    )
     copyButton:SetText("Copy")
 
-    copyButton:SetScript("OnClick", function()
-        showCopyPopup()
-    end)
+    copyButton:SetScript(
+        "OnClick",
+        function()
+            showCopyPopup()
+        end
+    )
 
     updateDisplay()
+end
+
+-----------------------------------------------------------------
+-- Public functions
+-----------------------------------------------------------------
+
+function debugWindow:initialize()
+    if self.initialized then
+        return
+    end
+
+    if not core.initialized then
+        error(
+            "DebugWindow cannot initialize before Core initialization."
+        )
+    end
+
+    local database =
+        core:getSavedVariables()
+
+    if not database then
+        error(
+            "DebugWindow could not access AutoEquip SavedVariables."
+        )
+    end
+
+    savedVariables =
+        database.debugWindow
+
+    dbg:setMessageHandler(
+        function()
+            updateDisplay()
+        end
+    )
+
+    self.initialized = true
+
+    dbg:print(
+        fileName .. " initialized"
+    )
 end
 
 function debugWindow:show()
@@ -371,44 +485,40 @@ function debugWindow:showCopyPopup()
     showCopyPopup()
 end
 
-local eventFrame = CreateFrame("Frame")
-
-eventFrame:RegisterEvent("ADDON_LOADED")
-
-eventFrame:SetScript("OnEvent", function(self, event, loadedAddonName)
-    if loadedAddonName ~= addonName then
-        return
-    end
-
-    AUTOEQUIP_SAVED_VARS_DB =
-        AUTOEQUIP_SAVED_VARS_DB or {}
-
-    AUTOEQUIP_SAVED_VARS_DB.debugWindow =
-        AUTOEQUIP_SAVED_VARS_DB.debugWindow or {}
-
-    savedVariables =
-        AUTOEQUIP_SAVED_VARS_DB.debugWindow
-
-    dbg:setMessageHandler(function()
-        updateDisplay()
-    end)
-
-    self:UnregisterEvent("ADDON_LOADED")
-end)
+-----------------------------------------------------------------
+-- Module state
+-----------------------------------------------------------------
 
 debugWindow.loaded = true
+debugWindow.initialized = false
+
 if core:isDebuggingEnabled() then
     print(fileName .. " loaded")
 end
 
------ TESTING ONLY -----
+-----------------------------------------------------------------
+-- TESTING ONLY
+-----------------------------------------------------------------
+
 SLASH_AUTOEQUIPDEBUG1 = "/aedebug"
 
 SlashCmdList.AUTOEQUIPDEBUG = function()
+    print(
+        "loaded:",
+        debugWindow.loaded,
+        "initialized:",
+        debugWindow.initialized,
+        "savedVariables:",
+        savedVariables ~= nil
+    )
+
     if frame and frame:IsShown() then
         debugWindow:hide()
     else
         debugWindow:show()
-        dbg:print( "Debug window opened. Use /aedebug to toggle visibility." )
+
+        dbg:print(
+            "Debug window opened. Use /aedebug to toggle visibility."
+        )
     end
 end
