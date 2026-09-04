@@ -16,7 +16,7 @@ local core = AutoEquip.Core
 local minimapButton = {}
 AutoEquip.MinimapButton = minimapButton
 
-local MINIMAP_RADIUS = 80
+local MINIMAP_RADIUS = 110
 local ICON_TEXTURE = 894556
 
 local button
