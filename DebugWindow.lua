@@ -503,7 +503,7 @@ end
 SLASH_AUTOEQUIPDEBUG1 = "/aedebug"
 
 SlashCmdList.AUTOEQUIPDEBUG = function()
-    print(
+    dbg:print(
         "loaded:",
         debugWindow.loaded,
         "initialized:",
